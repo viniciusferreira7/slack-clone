@@ -1,3 +1,7 @@
+import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+
 import { GithubSvg } from '@/components/svg/github-svg'
 import { GoogleSvg } from '@/components/svg/google-svg'
 import { Button } from '@/components/ui/button'
@@ -11,6 +15,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 
+import {
+  signUpSchema,
+  type SignUpSchemaInput,
+  type SignUpSchemaOutput,
+} from './schemas/sign-up-schema'
 import type { SignInFlow } from './type'
 
 interface SignUpCardProps {
@@ -18,6 +27,21 @@ interface SignUpCardProps {
 }
 
 export function SignUpCard({ onState }: SignUpCardProps) {
+  const [parent] = useAutoAnimate()
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<SignUpSchemaInput>({
+    resolver: zodResolver(signUpSchema),
+  })
+
+  function handleSignUpForm(data: SignUpSchemaOutput) {
+    console.log(data)
+  }
+
+  console.log({ errors })
+
   return (
     <Card className="h-full w-full p-8">
       <CardHeader className="px-0 pt-0">
@@ -27,10 +51,43 @@ export function SignUpCard({ onState }: SignUpCardProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5 px-0 pb-0">
-        <form className="space-y-2.5">
-          <Input type="email" placeholder="Email" required />
-          <Input type="password" placeholder="Password" required />
-          <Input type="password" placeholder="Confirm password" required />
+        <form
+          ref={parent}
+          className="space-y-2.5"
+          onSubmit={handleSubmit(handleSignUpForm)}
+        >
+          <div className="space-y-1">
+            <Input type="email" placeholder="Email" {...register('email')} />
+            {errors.email && (
+              <p className="text-xs font-semibold text-destructive">
+                {errors.email?.message}
+              </p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Input
+              type="password"
+              placeholder="Password"
+              {...register('password')}
+            />
+            {errors.password && (
+              <p className="text-xs font-semibold text-destructive">
+                {errors.password?.message}
+              </p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Input
+              type="password"
+              placeholder="Confirm password"
+              {...register('confirmPassword')}
+            />
+            {errors.confirmPassword && (
+              <p className="text-xs font-semibold text-destructive">
+                {errors.confirmPassword?.message}
+              </p>
+            )}
+          </div>
           <Button type="submit" size="lg" className="w-full">
             Continue
           </Button>
@@ -48,7 +105,7 @@ export function SignUpCard({ onState }: SignUpCardProps) {
           Already have an account?{' '}
           <span
             className="cursor-pointer text-sky-700 duration-200 ease-in-out hover:underline"
-            onClick={() => onState('signIn')}
+            onClick={() => onState('signUp')}
           >
             Sign in
           </span>
