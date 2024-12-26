@@ -40,8 +40,6 @@ export function SignUpCard({ onState }: SignUpCardProps) {
     console.log(data)
   }
 
-  console.log({ errors })
-
   return (
     <Card className="h-full w-full p-8">
       <CardHeader className="px-0 pt-0">
@@ -105,7 +103,7 @@ export function SignUpCard({ onState }: SignUpCardProps) {
           Already have an account?{' '}
           <span
             className="cursor-pointer text-sky-700 duration-200 ease-in-out hover:underline"
-            onClick={() => onState('signUp')}
+            onClick={() => onState('signIn')}
           >
             Sign in
           </span>
