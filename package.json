@@ -9,6 +9,8 @@
     "lint": "next lint --fix"
   },
   "dependencies": {
+    "@auth/core": "0.37.0",
+    "@convex-dev/auth": "^0.0.77",
     "@formkit/auto-animate": "^0.8.2",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-separator": "^1.1.1",
