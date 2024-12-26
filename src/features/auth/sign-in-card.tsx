@@ -81,7 +81,7 @@ export function SignInCard({ onState }: SignInCardProps) {
         <Separator />
         <div className="flex flex-col gap-y-2.5">
           <Button variant="outline" size="lg" className="relative w-full">
-            <GoogleSvg className="absolute left-2.5" /> Continue with google
+            <GoogleSvg className="absolute left-2.5" /> Continue with Google
           </Button>
           <Button variant="outline" size="lg" className="relative w-full">
             <GithubSvg className="absolute left-2.5" /> Continue with GitHub
