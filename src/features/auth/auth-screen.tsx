@@ -11,11 +11,11 @@ export function AuthScreen() {
 
   return (
     <div className="grid h-screen place-items-center bg-fuchsia-900">
-      <div className="md:w-105 md:h-auto">
+      <div className="duration-500 ease-in-out md:h-auto md:w-105">
         {state === 'signIn' ? (
           <SignInCard onState={setState} />
         ) : (
-          <SignUpCard />
+          <SignUpCard onState={setState} />
         )}
       </div>
     </div>
