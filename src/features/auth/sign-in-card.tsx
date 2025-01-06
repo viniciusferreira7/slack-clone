@@ -1,3 +1,4 @@
+import { useAuthActions } from '@convex-dev/auth/react'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -28,6 +29,7 @@ interface SignInCardProps {
 
 export function SignInCard({ onState }: SignInCardProps) {
   const [parent] = useAutoAnimate()
+  const { signIn } = useAuthActions()
   const {
     handleSubmit,
     register,
@@ -38,6 +40,10 @@ export function SignInCard({ onState }: SignInCardProps) {
 
   function handleSignInForm(data: SignInSchemaOutput) {
     console.log(data)
+  }
+
+  function handleSignIn(provider: 'github' | 'google') {
+    signIn(provider)
   }
 
   return (
@@ -80,10 +86,20 @@ export function SignInCard({ onState }: SignInCardProps) {
         </form>
         <Separator />
         <div className="flex flex-col gap-y-2.5">
-          <Button variant="outline" size="lg" className="relative w-full">
+          <Button
+            variant="outline"
+            size="lg"
+            className="relative w-full"
+            onClick={() => handleSignIn('google')}
+          >
             <GoogleSvg className="absolute left-2.5" /> Continue with Google
           </Button>
-          <Button variant="outline" size="lg" className="relative w-full">
+          <Button
+            variant="outline"
+            size="lg"
+            className="relative w-full"
+            onClick={() => handleSignIn('github')}
+          >
             <GithubSvg className="absolute left-2.5" /> Continue with GitHub
           </Button>
         </div>

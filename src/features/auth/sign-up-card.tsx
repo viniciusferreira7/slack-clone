@@ -1,3 +1,4 @@
+import { useAuthActions } from '@convex-dev/auth/react'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -28,6 +29,7 @@ interface SignUpCardProps {
 
 export function SignUpCard({ onState }: SignUpCardProps) {
   const [parent] = useAutoAnimate()
+  const { signIn } = useAuthActions()
   const {
     handleSubmit,
     register,
@@ -95,7 +97,12 @@ export function SignUpCard({ onState }: SignUpCardProps) {
           <Button variant="outline" size="lg" className="relative w-full">
             <GoogleSvg className="absolute left-2.5" /> Continue with google
           </Button>
-          <Button variant="outline" size="lg" className="relative w-full">
+          <Button
+            variant="outline"
+            size="lg"
+            className="relative w-full"
+            onClick={() => signIn('github')}
+          >
             <GithubSvg className="absolute left-2.5" /> Continue with GitHub
           </Button>
         </div>

@@ -10,6 +10,9 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
   if (!isPublicPage(request) && !(await convexAuth.isAuthenticated())) {
     return nextjsMiddlewareRedirect(request, '/auth')
   }
+  if (isPublicPage(request) && (await convexAuth.isAuthenticated())) {
+    return nextjsMiddlewareRedirect(request, '/')
+  }
 })
 
 export const config = {
