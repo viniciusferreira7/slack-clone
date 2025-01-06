@@ -1,5 +1,3 @@
-import { AuthScreen } from '@/features/auth/auth-screen'
-
 export default function Home() {
-  return <AuthScreen />
+  return <h1>Hello world</h1>
 }
