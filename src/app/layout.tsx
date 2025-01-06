@@ -1,5 +1,6 @@
 import './globals.css'
 
+import { ConvexAuthNextjsServerProvider } from '@convex-dev/auth/nextjs/server'
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import { Geist, Geist_Mono } from 'next/font/google'
@@ -28,12 +29,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
-      >
-        <ConvexClientProvider>{children}</ConvexClientProvider>
-      </body>
-    </html>
+    <ConvexAuthNextjsServerProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
+        >
+          <ConvexClientProvider>{children}</ConvexClientProvider>
+        </body>
+      </html>
+    </ConvexAuthNextjsServerProvider>
   )
 }
