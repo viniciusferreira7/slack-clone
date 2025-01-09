@@ -1,6 +1,8 @@
 import { useAuthActions } from '@convex-dev/auth/react'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { TriangleAlert } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { GithubSvg } from '@/components/svg/github-svg'
@@ -30,6 +32,10 @@ interface SignUpCardProps {
 export function SignUpCard({ onState }: SignUpCardProps) {
   const [parent] = useAutoAnimate()
   const { signIn } = useAuthActions()
+
+  const [error, setError] = useState<string | null>(null)
+  const [pending, setPending] = useState(false)
+
   const {
     handleSubmit,
     register,
@@ -39,7 +45,24 @@ export function SignUpCard({ onState }: SignUpCardProps) {
   })
 
   function handleSignUpForm(data: SignUpSchemaOutput) {
-    console.log(data)
+    setPending(true)
+
+    signIn('password', {
+      email: data.email,
+      password: data.password,
+      flow: 'signUp',
+    })
+      .catch((err) => {
+        console.log(err)
+        setError('Passwords do not match')
+      })
+      .finally(() => setPending(false))
+  }
+
+  function handleSignUp(provider: 'github' | 'google') {
+    setPending(true)
+
+    signIn(provider).finally(() => setPending(false))
   }
 
   return (
@@ -50,6 +73,12 @@ export function SignUpCard({ onState }: SignUpCardProps) {
           Use your email or another service to continue
         </CardDescription>
       </CardHeader>
+      {!!error && (
+        <div className="mb-6 flex items-center gap-x-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+          <TriangleAlert className="size-4" />
+          <p>{error}</p>
+        </div>
+      )}
       <CardContent className="space-y-5 px-0 pb-0">
         <form
           ref={parent}
@@ -88,20 +117,27 @@ export function SignUpCard({ onState }: SignUpCardProps) {
               </p>
             )}
           </div>
-          <Button type="submit" size="lg" className="w-full">
+          <Button type="submit" size="lg" className="w-full" disabled={pending}>
             Continue
           </Button>
         </form>
         <Separator />
         <div className="flex flex-col gap-y-2.5">
-          <Button variant="outline" size="lg" className="relative w-full">
+          <Button
+            variant="outline"
+            size="lg"
+            className="relative w-full"
+            onClick={() => handleSignUp('google')}
+            disabled={pending}
+          >
             <GoogleSvg className="absolute left-2.5" /> Continue with google
           </Button>
           <Button
             variant="outline"
             size="lg"
             className="relative w-full"
-            onClick={() => signIn('github')}
+            onClick={() => handleSignUp('github')}
+            disabled={pending}
           >
             <GithubSvg className="absolute left-2.5" /> Continue with GitHub
           </Button>

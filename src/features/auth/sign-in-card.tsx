@@ -1,6 +1,7 @@
 import { useAuthActions } from '@convex-dev/auth/react'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -31,6 +32,8 @@ interface SignInCardProps {
 export function SignInCard({ onState }: SignInCardProps) {
   const [parent] = useAutoAnimate()
   const { signIn } = useAuthActions()
+
+  const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
 
   const {
@@ -42,7 +45,15 @@ export function SignInCard({ onState }: SignInCardProps) {
   })
 
   function handleSignInForm(data: SignInSchemaOutput) {
-    console.log(data)
+    setPending(true)
+
+    signIn('password', {
+      email: data.email,
+      password: data.password,
+      flow: 'signIn',
+    })
+      .catch(() => setError('Invalid email or password'))
+      .finally(() => setPending(false))
   }
 
   function handleSignIn(provider: 'github' | 'google') {
@@ -59,6 +70,12 @@ export function SignInCard({ onState }: SignInCardProps) {
           Use your email or another service to continue
         </CardDescription>
       </CardHeader>
+      {!!error && (
+        <div className="mb-6 flex items-center gap-x-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+          <TriangleAlert className="size-4" />
+          <p>{error}</p>
+        </div>
+      )}
       <CardContent className="space-y-5 px-0 pb-0">
         <form
           ref={parent}
