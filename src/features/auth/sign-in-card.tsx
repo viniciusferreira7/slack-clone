@@ -1,6 +1,7 @@
 import { useAuthActions } from '@convex-dev/auth/react'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { GithubSvg } from '@/components/svg/github-svg'
@@ -30,6 +31,8 @@ interface SignInCardProps {
 export function SignInCard({ onState }: SignInCardProps) {
   const [parent] = useAutoAnimate()
   const { signIn } = useAuthActions()
+  const [pending, setPending] = useState(false)
+
   const {
     handleSubmit,
     register,
@@ -43,7 +46,9 @@ export function SignInCard({ onState }: SignInCardProps) {
   }
 
   function handleSignIn(provider: 'github' | 'google') {
-    signIn(provider)
+    setPending(true)
+
+    signIn(provider).finally(() => setPending(false))
   }
 
   return (
@@ -80,7 +85,7 @@ export function SignInCard({ onState }: SignInCardProps) {
               </p>
             )}
           </div>
-          <Button type="submit" size="lg" className="w-full">
+          <Button type="submit" size="lg" className="w-full" disabled={pending}>
             Continue
           </Button>
         </form>
@@ -91,6 +96,7 @@ export function SignInCard({ onState }: SignInCardProps) {
             size="lg"
             className="relative w-full"
             onClick={() => handleSignIn('google')}
+            disabled={pending}
           >
             <GoogleSvg className="absolute left-2.5" /> Continue with Google
           </Button>
@@ -99,6 +105,7 @@ export function SignInCard({ onState }: SignInCardProps) {
             size="lg"
             className="relative w-full"
             onClick={() => handleSignIn('github')}
+            disabled={pending}
           >
             <GithubSvg className="absolute left-2.5" /> Continue with GitHub
           </Button>
