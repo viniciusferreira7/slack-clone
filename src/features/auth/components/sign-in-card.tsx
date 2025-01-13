@@ -22,8 +22,8 @@ import {
   signInSchema,
   type SignInSchemaInput,
   type SignInSchemaOutput,
-} from './schemas/sign-in-schema'
-import type { SignInFlow } from './type'
+} from '../schemas/sign-in-schema'
+import type { SignInFlow } from '../type'
 
 interface SignInCardProps {
   onState: (state: SignInFlow) => void

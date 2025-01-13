@@ -22,8 +22,8 @@ import {
   signUpSchema,
   type SignUpSchemaInput,
   type SignUpSchemaOutput,
-} from './schemas/sign-up-schema'
-import type { SignInFlow } from './type'
+} from '../schemas/sign-up-schema'
+import type { SignInFlow } from '../type'
 
 interface SignUpCardProps {
   onState: (state: SignInFlow) => void
@@ -48,6 +48,7 @@ export function SignUpCard({ onState }: SignUpCardProps) {
     setPending(true)
 
     signIn('password', {
+      name: data.name,
       email: data.email,
       password: data.password,
       flow: 'signUp',
@@ -85,6 +86,14 @@ export function SignUpCard({ onState }: SignUpCardProps) {
           className="space-y-2.5"
           onSubmit={handleSubmit(handleSignUpForm)}
         >
+          <div className="space-y-1">
+            <Input type="text" placeholder="Name" {...register('name')} />
+            {errors.name && (
+              <p className="text-xs font-semibold text-destructive">
+                {errors.name?.message}
+              </p>
+            )}
+          </div>
           <div className="space-y-1">
             <Input type="email" placeholder="Email" {...register('email')} />
             {errors.email && (
