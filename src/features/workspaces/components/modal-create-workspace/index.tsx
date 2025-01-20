@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -15,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
+import { useCreateWorkspace } from '../../api/use-create-workspace'
 import { useCreateWorkspaceModal } from '../../store/use-create-workspace-modal'
 import {
   createWorkspaceFormSchema,
@@ -30,6 +32,7 @@ export function ModalCreateWorkspace({
   open: openModal,
 }: ModalCreateWorkspaceProps) {
   const [open, setOpen] = useCreateWorkspaceModal()
+  const router = useRouter()
   const {
     handleSubmit,
     register,
@@ -43,6 +46,8 @@ export function ModalCreateWorkspace({
     resolver: zodResolver(createWorkspaceFormSchema),
   })
 
+  const { mutate, isPending } = useCreateWorkspace()
+
   useEffect(() => {
     if (openModal) {
       setOpen(openModal)
@@ -54,7 +59,14 @@ export function ModalCreateWorkspace({
   }
 
   function handleCreateWorkspace(data: CreateWorkspaceFormSchemaOutput) {
-    console.log({ data })
+    mutate(
+      { workspace_name: data.workspace_name },
+      {
+        onSuccess(data) {
+          router.push(`/workspace/${data.workspaceId}`)
+        },
+      },
+    )
   }
 
   return (
@@ -96,7 +108,9 @@ export function ModalCreateWorkspace({
               </p>
             )}
           </div>
-          <Button type="submit">Create</Button>
+          <Button type="submit" disabled={isPending}>
+            Create
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
