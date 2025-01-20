@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 import { useCreateWorkspaceModal } from '../../store/use-create-workspace-modal'
 import {
@@ -28,7 +30,11 @@ export function ModalCreateWorkspace({
   open: openModal,
 }: ModalCreateWorkspaceProps) {
   const [open, setOpen] = useCreateWorkspaceModal()
-  const { handleSubmit, register } = useForm<
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<
     CreateWorkspaceFormSchemaInput,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any,
@@ -63,7 +69,7 @@ export function ModalCreateWorkspace({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogTitle>Add a workspace</DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete your
             account and remove your data from our servers.
@@ -73,7 +79,24 @@ export function ModalCreateWorkspace({
           className="space-y-4"
           onSubmit={handleSubmit(handleCreateWorkspace)}
         >
-          <Input {...register('workspace_name')} autoFocus />
+          <div className="space-y-2">
+            <Input
+              {...register('workspace_name')}
+              autoFocus
+              placeholder='Workspace name e.g. "Work", "Personal", "Home"'
+              className={cn(
+                'duration-200 ease-in-out',
+                errors.workspace_name &&
+                  'border-destructive text-destructive placeholder:text-destructive',
+              )}
+            />
+            {errors.workspace_name && (
+              <p className="text-sm font-semibold text-destructive">
+                {errors.workspace_name.message}
+              </p>
+            )}
+          </div>
+          <Button type="submit">Create</Button>
         </form>
       </DialogContent>
     </Dialog>
