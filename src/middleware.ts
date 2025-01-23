@@ -17,6 +17,12 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
     return nextjsMiddlewareRedirect(request, '/auth')
   }
   if (isPublicPage(request) && (await convexAuth.isAuthenticated())) {
+    return nextjsMiddlewareRedirect(request, '/')
+  }
+
+  if (!isPublicPage(request) && (await convexAuth.isAuthenticated())) {
+    cookieStore.delete('workspace-id')
+
     const workspace = await fetchQuery(api.workspaces.get)
 
     const workspaceId = workspace?.[0]?._id
@@ -24,8 +30,6 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
     if (workspaceId) {
       cookieStore.set('workspace-id', workspaceId)
     }
-
-    return nextjsMiddlewareRedirect(request, '/')
   }
 })
 

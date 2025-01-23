@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation } from 'convex/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { api } from '../../../../convex/_generated/api'
 import type { Id } from '../../../../convex/_generated/dataModel'
@@ -16,17 +16,21 @@ interface CreateWorkspaceResponse {
 interface Options {
   onSuccess?: (data: CreateWorkspaceResponse) => void
   onError?: (err: unknown) => void
-  onSettled?: () => void
+  onSettled?: VoidFunction
 }
+
+type Status = 'pending' | 'error' | 'success' | 'settled' | null
 
 export const useCreateWorkspace = () => {
   const [data, setData] = useState<CreateWorkspaceResponse | null>(null)
   const [error, setError] = useState<null | unknown>()
 
-  const [isPending, setIsPending] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [isSettled, setIsSettled] = useState(false)
+  const [status, setStatus] = useState<Status>(null)
+
+  const isPending = useMemo(() => status === 'pending', [status])
+  const isError = useMemo(() => status === 'error', [status])
+  const isSuccess = useMemo(() => status === 'success', [status])
+  const isSettled = useMemo(() => status === 'settled', [status])
 
   const mutation = useMutation(api.workspaces.create)
 
@@ -34,12 +38,8 @@ export const useCreateWorkspace = () => {
     async (values: CreateWorkspaceRequest, options?: Options) => {
       try {
         setData(null)
-        setError(null)
 
-        setIsPending(true)
-        setIsError(false)
-        setIsSuccess(false)
-        setIsSettled(false)
+        setStatus('pending')
 
         const response = await mutation(values)
 
@@ -47,17 +47,15 @@ export const useCreateWorkspace = () => {
 
         options?.onSuccess?.(response)
         setData(response)
-        setIsError(false)
-        setIsSuccess(true)
+        setStatus('success')
       } catch (err) {
         options?.onError?.(err)
         setError(err)
 
-        setIsError(true)
-        setIsSuccess(false)
+        setStatus('error')
       } finally {
         options?.onSettled?.()
-        setIsPending(false)
+        setStatus('settled')
       }
     },
     [mutation],

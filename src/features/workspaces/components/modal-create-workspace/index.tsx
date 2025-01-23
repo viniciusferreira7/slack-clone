@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -63,6 +64,7 @@ export function ModalCreateWorkspace({
       { workspace_name: data.workspace_name },
       {
         onSuccess(data) {
+          toast.success('Workspace created')
           router.push(`/workspace/${data.workspaceId}`)
         },
       },
