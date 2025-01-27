@@ -11,6 +11,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        slack: {
+          purple: '#481349',
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

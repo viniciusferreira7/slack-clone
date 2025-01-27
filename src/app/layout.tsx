@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Slack clone,',
+    template: '%s | Slack clone',
     absolute: 'Slack clone',
   },
 }
