@@ -35,7 +35,7 @@ export async function generateMetadata({
     title: `${workspaceData?.name} - Workspace`,
   }
 }
-export default function WorkspaceIdLayout({
+export default async function WorkspaceIdLayout({
   children,
 }: WorkspaceIdLayoutProps) {
   return (

@@ -4,14 +4,14 @@ import {
   nextjsMiddlewareRedirect,
 } from '@convex-dev/auth/nextjs/server'
 import { fetchQuery } from 'convex/nextjs'
-import { cookies } from 'next/headers'
 
 import { api } from '../convex/_generated/api'
+import type { Id } from '../convex/_generated/dataModel'
 
 const isPublicPage = createRouteMatcher(['/auth'])
 
 export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
-  const cookieStore = await cookies()
+  // const cookieStore = await cookies()
 
   if (!isPublicPage(request) && !(await convexAuth.isAuthenticated())) {
     return nextjsMiddlewareRedirect(request, '/auth')
@@ -21,14 +21,20 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
   }
 
   if (!isPublicPage(request) && (await convexAuth.isAuthenticated())) {
-    cookieStore.delete('workspace-id')
+    request.cookies.delete('workspace-id')
 
-    const workspace = await fetchQuery(api.workspaces.get)
+    const pathname = request.nextUrl.pathname
 
-    const workspaceId = workspace?.[0]?._id
+    if (pathname.startsWith('workspace')) {
+      const [, _workspace, workspaceId] = pathname.split('/')
 
-    if (workspaceId) {
-      cookieStore.set('workspace-id', workspaceId)
+      const workspace = await fetchQuery(api.workspaces.getById, {
+        id: workspaceId as Id<'workspaces'>,
+      })
+
+      if (workspace?._id) {
+        request.cookies.set('workspace-id', workspace?._id)
+      }
     }
   }
 })

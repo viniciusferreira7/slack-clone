@@ -13,6 +13,7 @@ export const getById = query({
     if (!userId) {
       throw new Error('Unauthorized')
     }
+
     return ctx.db.get(args.id)
   },
 })

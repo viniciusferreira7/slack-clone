@@ -1,22 +1,30 @@
-import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
+import { convexAuthNextjsToken } from '@convex-dev/auth/nextjs/server'
+import { preloadQuery } from 'convex/nextjs'
 import { redirect } from 'next/navigation'
 
+import { api } from '../../../../convex/_generated/api'
+import type { Id } from '../../../../convex/_generated/dataModel'
+
 interface WorkspacePageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-export const metadata: Metadata = {
-  title: 'Workspace',
-}
 export default async function WorkspacePage({ params }: WorkspacePageProps) {
   const { id } = await params
 
-  const cookieStore = await cookies()
+  const preloadedWorkspace = await preloadQuery(
+    api.workspaces.getById,
+    {
+      id: id as Id<'workspaces'>,
+    },
+    { token: await convexAuthNextjsToken() },
+  )
 
-  if (!cookieStore.has('workspace-id')) {
+  const workspaceData = preloadedWorkspace._valueJSON
+
+  if (!workspaceData) {
     redirect('/')
   }
 
