@@ -12,7 +12,7 @@ export function Toolbar() {
   const { data, isLoading } = useGetWorkspace({ id: workspaceId })
 
   return (
-    <div className="bg-slack-purple flex h-10 justify-between p-1.5">
+    <div className="bg-slack-purple-900 flex h-10 justify-between p-1.5">
       <div className="flex-1" />
       <div className="min-w-[280px] max-w-[642px] shrink grow-[2]">
         <Button

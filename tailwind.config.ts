@@ -12,7 +12,13 @@ export default {
     extend: {
       colors: {
         slack: {
-          purple: '#481349',
+          purple: {
+            900: '#481349',
+          },
+          gray: {
+            200: '#F2F2F2',
+            400: '#ABABAD',
+          },
         },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -32,6 +32,7 @@ interface ModalCreateWorkspaceProps {
 export function ModalCreateWorkspace({
   open: openModal,
 }: ModalCreateWorkspaceProps) {
+  const pathname = usePathname()
   const [open, setOpen] = useCreateWorkspaceModal()
   const router = useRouter()
   const {
@@ -71,17 +72,21 @@ export function ModalCreateWorkspace({
     )
   }
 
+  const isWorkspace = pathname.split('/').includes('workspace')
+
   return (
     <Dialog
       modal
       open={open}
       onOpenChange={(value) => {
-        if (openModal && !value) {
+        if (openModal && !value && !isWorkspace) {
           setOpen(true)
+        } else {
+          setOpen(value)
         }
       }}
     >
-      <DialogContent>
+      <DialogContent hiddenCloseIcon={!isWorkspace}>
         <DialogHeader>
           <DialogTitle>Add a workspace</DialogTitle>
           <DialogDescription>
