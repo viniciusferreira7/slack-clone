@@ -67,6 +67,7 @@ export function ModalCreateWorkspace({
         onSuccess(data) {
           toast.success('Workspace created')
           router.push(`/workspace/${data.workspaceId}`)
+          setOpen(false)
         },
       },
     )

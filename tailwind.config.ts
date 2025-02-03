@@ -18,6 +18,7 @@ export default {
           gray: {
             200: '#F2F2F2',
             400: '#ABABAD',
+            600: '#616061',
           },
         },
         background: 'hsl(var(--background))',

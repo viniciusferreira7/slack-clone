@@ -40,7 +40,7 @@ export function WorkspaceSwitcher() {
           asChild
           disabled={isWorkspaceLoading || isWorkspacesLoading}
         >
-          <Button className="bg-slack-gray-400 hover:bg-slack-gray-400/80 relative size-9 overflow-hidden text-xl font-bold text-slate-800">
+          <Button className="relative size-9 overflow-hidden bg-slack-gray-400 text-xl font-bold text-slate-800 hover:bg-slack-gray-400/80">
             {isWorkspaceLoading ? (
               <Loader className="size-5 shrink-0 animate-spin" />
             ) : (
@@ -66,11 +66,20 @@ export function WorkspaceSwitcher() {
               return (
                 <DropdownMenuItem
                   key={workspace._id}
-                  className="flex cursor-pointer flex-col items-start justify-start capitalize"
+                  className="flex cursor-pointer capitalize"
                   asChild
                 >
                   <Link href={`/workspace/${workspace._id}`}>
-                    {workspace?.name}{' '}
+                    <div className="bg-slack-gray-600 relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md text-xl font-bold text-white hover:bg-slack-gray-400/80">
+                      {workspace?.name.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="max-w-36 truncate">
+                      {workspace?.name} Lorem ipsum dolor sit amet consectetur
+                      adipisicing elit. Veritatis itaque, dolores animi
+                      voluptate quia quisquam ex. Nam harum corrupti eius
+                      molestias facilis. Fugiat dignissimos, facilis quos ut
+                      omnis alias nobis.
+                    </span>
                   </Link>
                 </DropdownMenuItem>
               )
@@ -79,7 +88,7 @@ export function WorkspaceSwitcher() {
               className="cursor-pointer"
               onClick={() => setOpenModal(true)}
             >
-              <div className="bg-slack-gray-200 text-ls relative mr-2 flex size-9 items-center justify-center overflow-hidden rounded-md font-semibold text-slate-800">
+              <div className="text-ls relative mr-2 flex size-9 items-center justify-center overflow-hidden rounded-md bg-slack-gray-200 font-semibold text-slate-800">
                 <Plus />
               </div>
               Create new workspace
