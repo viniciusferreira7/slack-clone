@@ -70,16 +70,10 @@ export function WorkspaceSwitcher() {
                   asChild
                 >
                   <Link href={`/workspace/${workspace._id}`}>
-                    <div className="bg-slack-gray-600 relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md text-xl font-bold text-white hover:bg-slack-gray-400/80">
+                    <div className="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-slack-gray-600 text-xl font-bold text-white hover:bg-slack-gray-400/80">
                       {workspace?.name.charAt(0).toUpperCase()}
                     </div>
-                    <span className="max-w-36 truncate">
-                      {workspace?.name} Lorem ipsum dolor sit amet consectetur
-                      adipisicing elit. Veritatis itaque, dolores animi
-                      voluptate quia quisquam ex. Nam harum corrupti eius
-                      molestias facilis. Fugiat dignissimos, facilis quos ut
-                      omnis alias nobis.
-                    </span>
+                    <span className="max-w-36 truncate">{workspace?.name}</span>
                   </Link>
                 </DropdownMenuItem>
               )
