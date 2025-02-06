@@ -3,10 +3,13 @@ import {
   createRouteMatcher,
   nextjsMiddlewareRedirect,
 } from '@convex-dev/auth/nextjs/server'
+import { cookies } from 'next/headers'
 
 const isPublicPage = createRouteMatcher(['/auth'])
 
 export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
+  const cookieStore = await cookies()
+
   if (!isPublicPage(request) && !(await convexAuth.isAuthenticated())) {
     return nextjsMiddlewareRedirect(request, '/auth')
   }
@@ -20,12 +23,14 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
     if (pathname.startsWith('/workspace')) {
       const [, _workspace, workspaceId] = pathname.split('/')
 
-      request.cookies.set('workspace-id', workspaceId)
+      cookieStore.set('workspace-id', workspaceId)
     }
 
     const workspaceIdFromCookies = request.cookies.get('workspace-id')?.value
 
-    if (!workspaceIdFromCookies) {
+    const isHomePage = pathname === '/'
+
+    if (!workspaceIdFromCookies && !isHomePage) {
       return nextjsMiddlewareRedirect(request, `/`)
     }
   }
