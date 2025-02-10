@@ -11,6 +11,7 @@ interface CreateWorkspaceRequest {
 }
 interface CreateWorkspaceResponse {
   workspaceId: Id<'workspaces'>
+  memberId: Id<'members'>
 }
 
 interface Options {

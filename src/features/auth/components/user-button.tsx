@@ -3,6 +3,7 @@
 import { useAuthActions } from '@convex-dev/auth/react'
 import { Loader, LogOut } from 'lucide-react'
 
+import { deleteCookie } from '@/app/utils/cookie/delete-cookie'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -29,6 +30,11 @@ export function UserButton() {
 
   const avatarFallback = name!.charAt(0).toUpperCase()
 
+  async function handleSignOut() {
+    await deleteCookie('workspace-id')
+    signOut()
+  }
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="relative outline-none">
@@ -38,7 +44,7 @@ export function UserButton() {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center" side="right" className="w-60">
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 size-4" />
           Log out
         </DropdownMenuItem>
