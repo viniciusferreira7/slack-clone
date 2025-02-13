@@ -6,6 +6,8 @@ import { useCurrentMember } from '@/features/members/api/use-current-member'
 import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
+import { WorkspaceHeader } from './workspace-header'
+
 export function WorkspaceSidebar() {
   const workspaceId = useWorkspaceId()
   const { data: members, isLoading: isMembersLoading } = useCurrentMember({
@@ -33,8 +35,8 @@ export function WorkspaceSidebar() {
   }
 
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-slack-purple-600">
-      teste
+    <div className="flex flex-col bg-slack-purple-600">
+      <WorkspaceHeader workspace={workspace} />
     </div>
   )
 }
