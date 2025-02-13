@@ -4,10 +4,17 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable'
+
 import { api } from '../../../../convex/_generated/api'
 import type { Id } from '../../../../convex/_generated/dataModel'
 import { Sidebar } from './components/sidebar'
 import { Toolbar } from './components/toolbar'
+import { WorkspaceSidebar } from './components/workspace-sidebar'
 
 interface WorkspaceIdLayoutProps {
   params: Promise<{
@@ -60,7 +67,20 @@ export default async function WorkspaceIdLayout({
       <Toolbar />
       <div className="flex h-[calc(100vh-40px)]">
         <Sidebar />
-        {children}
+        <ResizablePanelGroup
+          direction="horizontal"
+          autoSaveId="ca-workspace-id"
+        >
+          <ResizablePanel
+            defaultSize={20}
+            minSize={11}
+            className="bg-slack-purple-600"
+          >
+            <WorkspaceSidebar />
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel minSize={20}>{children}</ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </div>
   )

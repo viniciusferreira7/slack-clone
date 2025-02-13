@@ -33,8 +33,6 @@ export function WorkspaceSwitcher() {
     (workspace) => workspace._id !== workspaceId,
   )
 
-  console.log({ workspaces })
-
   return (
     <>
       <DropdownMenu>

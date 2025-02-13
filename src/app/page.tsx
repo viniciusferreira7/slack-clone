@@ -23,8 +23,6 @@ export default async function Home() {
       { token: await convexAuthNextjsToken() },
     )
 
-    console.log({ preloadedWorkspace })
-
     if (preloadedWorkspace._valueJSON) {
       const workspaceData = preloadedWorkspace._valueJSON
 
