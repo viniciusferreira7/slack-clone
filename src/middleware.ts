@@ -26,7 +26,7 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
       console.log({ workspaceId })
 
       cookieStore.set('workspace-id', workspaceId, {
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3), // 3 days,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 4), // 3 days,
       })
     }
 

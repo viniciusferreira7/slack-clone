@@ -14,17 +14,13 @@ export const currentMember = query({
       return null
     }
 
-    const members = await ctx.db
+    const member = await ctx.db
       .query('members')
       .withIndex('by_workspace_id_user_id', (q) =>
         q.eq('workspaceId', args.workspaceId).eq('userId', userId),
       )
-      .collect()
+      .unique()
 
-    if (!members.length) {
-      return null
-    }
-
-    return { members }
+    return member
   },
 })

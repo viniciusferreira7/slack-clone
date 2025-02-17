@@ -1,10 +1,12 @@
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, ListFilter, SquarePen } from 'lucide-react'
 
+import { Hint } from '@/components/hint'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
@@ -12,11 +14,10 @@ import type { Doc } from '../../../../../../convex/_generated/dataModel'
 
 interface WorkspaceHeaderProps {
   workspace: Doc<'workspaces'>
+  isAdmin: boolean
 }
 
-export function WorkspaceHeader({ workspace }: WorkspaceHeaderProps) {
-  console.log({ workspace })
-
+export function WorkspaceHeader({ workspace, isAdmin }: WorkspaceHeaderProps) {
   return (
     <div className="flex items-center justify-between px-4">
       <DropdownMenu>
@@ -37,10 +38,37 @@ export function WorkspaceHeader({ workspace }: WorkspaceHeaderProps) {
             </div>
             <div className="flex flex-col items-start">
               <p className="font-bold">{workspace.name}</p>
+              <p className="text-xs text-muted-foreground">Active workspace</p>
             </div>
           </DropdownMenuItem>
+          {isAdmin && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer">
+                Invite people to {workspace.name}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer">
+                Preferences
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
+      <div className="flex items-center gap-0.5">
+        <Hint label="New message" side="bottom">
+          <Button title="Filter" variant="transparent" size="iconSm">
+            <ListFilter className="size-4" />
+            <span className="sr-only">Filter</span>
+          </Button>
+        </Hint>
+        <Hint label="New message" side="bottom">
+          <Button title="Edit" variant="transparent" size="iconSm">
+            <SquarePen className="size-4" />
+            <span className="sr-only">Edit</span>
+          </Button>
+        </Hint>
+      </div>
     </div>
   )
 }
