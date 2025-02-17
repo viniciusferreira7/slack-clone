@@ -7,9 +7,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 
 import { Toaster } from '@/components/ui/sonner'
 
-const ConvexClientProvider = dynamic(
-  () => import('./contexts/convex-client-provider'),
-)
+const Providers = dynamic(() => import('./providers'))
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -39,8 +37,10 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
         >
-          <Toaster richColors />
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <Providers>
+            <Toaster richColors />
+            {children}
+          </Providers>
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>
