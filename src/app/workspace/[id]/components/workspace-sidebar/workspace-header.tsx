@@ -56,14 +56,14 @@ export function WorkspaceHeader({ workspace, isAdmin }: WorkspaceHeaderProps) {
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="flex items-center gap-0.5">
-        <Hint label="New message" side="bottom">
-          <Button title="Filter" variant="transparent" size="iconSm">
+        <Hint label="Filter conversation" side="bottom">
+          <Button variant="transparent" size="iconSm">
             <ListFilter className="size-4" />
             <span className="sr-only">Filter</span>
           </Button>
         </Hint>
         <Hint label="New message" side="bottom">
-          <Button title="Edit" variant="transparent" size="iconSm">
+          <Button variant="transparent" size="iconSm">
             <SquarePen className="size-4" />
             <span className="sr-only">Edit</span>
           </Button>

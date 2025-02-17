@@ -23,8 +23,6 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
     if (pathname.startsWith('/workspace')) {
       const [, _workspace, workspaceId] = pathname.split('/')
 
-      console.log({ workspaceId })
-
       cookieStore.set('workspace-id', workspaceId, {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 4), // 3 days,
       })

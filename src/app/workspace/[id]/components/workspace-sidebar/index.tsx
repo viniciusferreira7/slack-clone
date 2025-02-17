@@ -17,8 +17,6 @@ export function WorkspaceSidebar() {
     id: workspaceId,
   })
 
-  console.log({ member })
-
   if (isMemberLoading || isWorkspaceLoading) {
     return (
       <div className="flex h-full flex-col items-center justify-center bg-slack-purple-600">
