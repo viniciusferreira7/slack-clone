@@ -21,6 +21,9 @@ export default {
             400: '#ABABAD',
             600: '#616061',
           },
+          blue: {
+            700: '#1264a3',
+          },
         },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
