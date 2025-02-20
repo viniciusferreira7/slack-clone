@@ -114,5 +114,7 @@ export const update = mutation({
     await ctx.db.patch(args.id, {
       name: args.name,
     })
+
+    return { workspaceId: args.id }
   },
 })
