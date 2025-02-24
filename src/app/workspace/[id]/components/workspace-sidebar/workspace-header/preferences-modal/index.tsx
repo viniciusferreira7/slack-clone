@@ -1,5 +1,7 @@
 import { TrashIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import {
   Dialog,
@@ -7,8 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useGetWorkspaces } from '@/features/workspaces/api/use-get-workspaces'
 import { useRemoveWorkspace } from '@/features/workspaces/api/use-remove-workspace'
-import { useUpdateWorkspace } from '@/features/workspaces/api/use-update-workspace'
+import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
 import { UpdateWorkspaceModal } from './update-workspace-modal'
 
@@ -23,11 +26,41 @@ export function PreferencesModal({
   onOpenChange,
   initialValue,
 }: PreferencesModalProps) {
+  const workspaceId = useWorkspaceId()
   const [value, setValue] = useState(initialValue)
   const [editOpen, setEditOpen] = useState(false)
+  const { data: workspaces, isLoading: isLoadingWorkspaces } =
+    useGetWorkspaces()
+
+  const anotherWorkspace = workspaces?.filter(
+    (workspace) => workspace?._id !== workspaceId,
+  )
+
+  const router = useRouter()
 
   const { mutate: removeWorkspace, isPending: isRemovingWorkspace } =
     useRemoveWorkspace()
+
+  async function handleRemoveWorkspace() {
+    await removeWorkspace(
+      {
+        workspace_id: workspaceId,
+      },
+      {
+        onSuccess: async () => {
+          toast.success('Workspace was removed')
+          if (anotherWorkspace?.[0]) {
+            router.replace(`/workspace/${anotherWorkspace?.[0]._id}`)
+          } else {
+            router.replace('/')
+          }
+        },
+        onError: () => {
+          toast.error('Failed to remove workspace')
+        },
+      },
+    )
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -43,7 +76,8 @@ export function PreferencesModal({
           />
 
           <button
-            disabled={false}
+            disabled={isRemovingWorkspace || isLoadingWorkspaces}
+            onClick={handleRemoveWorkspace}
             className="hover:bbg-gray-50 flex cursor-pointer items-center gap-x-2 rounded-lg border bg-white px-5 py-4 text-rose-600"
           >
             <TrashIcon className="size-4" />

@@ -52,7 +52,7 @@ export function UpdateWorkspaceModal({
   async function handleUpdateForm(data: UpdateFormSchema) {
     console.log({ data })
 
-    updateWorkspace(
+    await updateWorkspace(
       {
         workspace_id: workspaceId,
         workspace_name: data.name,
