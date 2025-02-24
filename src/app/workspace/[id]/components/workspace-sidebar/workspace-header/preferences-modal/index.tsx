@@ -4,11 +4,13 @@ import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
+import { useRemoveWorkspace } from '@/features/workspaces/api/use-remove-workspace'
+import { useUpdateWorkspace } from '@/features/workspaces/api/use-update-workspace'
+
+import { UpdateWorkspaceModal } from './update-workspace-modal'
 
 interface PreferencesModalProps {
   open: boolean
@@ -22,6 +24,10 @@ export function PreferencesModal({
   initialValue,
 }: PreferencesModalProps) {
   const [value, setValue] = useState(initialValue)
+  const [editOpen, setEditOpen] = useState(false)
+
+  const { mutate: removeWorkspace, isPending: isRemovingWorkspace } =
+    useRemoveWorkspace()
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -30,13 +36,12 @@ export function PreferencesModal({
           <DialogTitle>{value}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-y-2 px-4 pb-4">
-          <div className="cursor-pointer rounded-lg border bg-white px-5 py-4 hover:bg-gray-50">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold">Workspace name</p>
-              <p className="text-slack-blue-700 text-sm">Edit</p>
-            </div>
-            <p className="text-sm">{value}</p>
-          </div>
+          <UpdateWorkspaceModal
+            open={editOpen}
+            onOpenChange={setEditOpen}
+            workspaceName={initialValue}
+          />
+
           <button
             disabled={false}
             className="hover:bbg-gray-50 flex cursor-pointer items-center gap-x-2 rounded-lg border bg-white px-5 py-4 text-rose-600"
