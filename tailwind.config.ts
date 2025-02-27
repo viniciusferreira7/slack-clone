@@ -13,6 +13,7 @@ export default {
       colors: {
         slack: {
           purple: {
+            100: '#f9edffcc',
             600: '#5E2C5F',
             900: '#481349',
           },
