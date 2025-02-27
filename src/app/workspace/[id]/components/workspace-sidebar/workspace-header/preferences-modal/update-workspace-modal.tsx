@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { useUpdateWorkspace } from '@/features/workspaces/api/use-update-workspace'
+import { useConfirm } from '@/hooks/use-confirm'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
 const updateFormSchema = z.object({
@@ -49,9 +50,15 @@ export function UpdateWorkspaceModal({
     },
   })
 
-  async function handleUpdateForm(data: UpdateFormSchema) {
-    console.log({ data })
+  const [DialogConfirmEdit, confirm] = useConfirm({
+    title: 'Are you sure?',
+    message: 'This action is irreversible',
+  })
 
+  async function handleUpdateForm(data: UpdateFormSchema) {
+    const ok = await confirm()
+
+    if (!ok) return
     await updateWorkspace(
       {
         workspace_id: workspaceId,
@@ -70,42 +77,45 @@ export function UpdateWorkspaceModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger className="cursor-pointer rounded-lg border bg-white px-5 py-4 hover:bg-gray-50">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col items-start">
-            <p className="text-sm font-semibold">Workspace name</p>
-            <p className="text-sm">{workspaceName}</p>
+    <>
+      <DialogConfirmEdit />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogTrigger className="cursor-pointer rounded-lg border bg-white px-5 py-4 hover:bg-gray-50">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col items-start">
+              <p className="text-sm font-semibold">Workspace name</p>
+              <p className="text-sm">{workspaceName}</p>
+            </div>
+            <p className="text-sm text-slack-blue-700">Edit</p>
           </div>
-          <p className="text-sm text-slack-blue-700">Edit</p>
-        </div>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Rename this workspace</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(handleUpdateForm)} className="space-y-4">
-          <Input
-            {...register('name')}
-            disabled={isUpdatingWorkspace}
-            autoFocus
-            placeholder='Workspace name e.g. "Work", "Personal", "Home"'
-          />
-          {errors.name && (
-            <p className="text-xs text-destructive">{errors.name.message}</p>
-          )}
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline" disabled={isUpdatingWorkspace}>
-                Cancel
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename this workspace</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit(handleUpdateForm)} className="space-y-4">
+            <Input
+              {...register('name')}
+              disabled={isUpdatingWorkspace}
+              autoFocus
+              placeholder='Workspace name e.g. "Work", "Personal", "Home"'
+            />
+            {errors.name && (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            )}
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline" disabled={isUpdatingWorkspace}>
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button type="submit" disabled={isUpdatingWorkspace}>
+                Save
               </Button>
-            </DialogClose>
-            <Button type="submit" disabled={isUpdatingWorkspace}>
-              Save
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

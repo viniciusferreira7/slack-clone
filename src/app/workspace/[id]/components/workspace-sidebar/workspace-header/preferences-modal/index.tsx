@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { useGetWorkspaces } from '@/features/workspaces/api/use-get-workspaces'
 import { useRemoveWorkspace } from '@/features/workspaces/api/use-remove-workspace'
+import { useConfirm } from '@/hooks/use-confirm'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
 import { UpdateWorkspaceModal } from './update-workspace-modal'
@@ -27,7 +28,6 @@ export function PreferencesModal({
   initialValue,
 }: PreferencesModalProps) {
   const workspaceId = useWorkspaceId()
-  const [value, setValue] = useState(initialValue)
   const [editOpen, setEditOpen] = useState(false)
   const { data: workspaces, isLoading: isLoadingWorkspaces } =
     useGetWorkspaces()
@@ -36,12 +36,20 @@ export function PreferencesModal({
     (workspace) => workspace?._id !== workspaceId,
   )
 
+  const [DialogConfirm, confirm] = useConfirm({
+    title: 'Are you sure?',
+    message: 'This action is irreversible',
+  })
   const router = useRouter()
 
   const { mutate: removeWorkspace, isPending: isRemovingWorkspace } =
     useRemoveWorkspace()
 
   async function handleRemoveWorkspace() {
+    const ok = await confirm()
+
+    if (!ok) return
+
     await removeWorkspace(
       {
         workspace_id: workspaceId,
@@ -63,28 +71,31 @@ export function PreferencesModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden bg-gray-50 p-0">
-        <DialogHeader className="border-b bg-white p-4">
-          <DialogTitle>{value}</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-y-2 px-4 pb-4">
-          <UpdateWorkspaceModal
-            open={editOpen}
-            onOpenChange={setEditOpen}
-            workspaceName={initialValue}
-          />
+    <>
+      <DialogConfirm />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="overflow-hidden bg-gray-50 p-0">
+          <DialogHeader className="border-b bg-white p-4">
+            <DialogTitle>{initialValue}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-y-2 px-4 pb-4">
+            <UpdateWorkspaceModal
+              open={editOpen}
+              onOpenChange={setEditOpen}
+              workspaceName={initialValue}
+            />
 
-          <button
-            disabled={isRemovingWorkspace || isLoadingWorkspaces}
-            onClick={handleRemoveWorkspace}
-            className="hover:bbg-gray-50 flex cursor-pointer items-center gap-x-2 rounded-lg border bg-white px-5 py-4 text-rose-600"
-          >
-            <TrashIcon className="size-4" />
-            <p className="text-sm font-semibold">Delete workspace</p>
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
+            <button
+              disabled={isRemovingWorkspace || isLoadingWorkspaces}
+              onClick={handleRemoveWorkspace}
+              className="hover:bbg-gray-50 flex cursor-pointer items-center gap-x-2 rounded-lg border bg-white px-5 py-4 text-rose-600"
+            >
+              <TrashIcon className="size-4" />
+              <p className="text-sm font-semibold">Delete workspace</p>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
