@@ -78,13 +78,19 @@ export const create = mutation({
       joinCode,
     })
 
-    const memberId = await ctx.db.insert('members', {
-      role: 'admin',
-      userId,
-      workspaceId: newWorkspaceId,
-    })
+    const [memberId, channelId] = await Promise.all([
+      ctx.db.insert('members', {
+        role: 'admin',
+        userId,
+        workspaceId: newWorkspaceId,
+      }),
+      ctx.db.insert('channels', {
+        name: 'general',
+        workspaceId: newWorkspaceId,
+      }),
+    ])
 
-    return { workspaceId: newWorkspaceId, memberId }
+    return { workspaceId: newWorkspaceId, memberId, channelId }
   },
 })
 
