@@ -11,7 +11,7 @@ export const get = query({
     const userId = await getAuthUserId(ctx)
 
     if (!userId) {
-      return { channels: [] }
+      return []
     }
 
     const member = await ctx.db
@@ -22,7 +22,7 @@ export const get = query({
       .unique()
 
     if (!member) {
-      return { channels: [] }
+      return []
     }
 
     const channels = ctx.db
@@ -32,6 +32,6 @@ export const get = query({
       )
       .collect()
 
-    return { channels }
+    return channels
   },
 })
