@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import { UserButton } from '@/features/auth/components/user-button'
-import { ModalCreateWorkspace } from '@/features/workspaces/components/modal-create-workspace'
+import { CreateWorkspaceModal } from '@/features/workspaces/components/create-workspace-modal'
 
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
@@ -33,9 +33,8 @@ export default async function Home() {
 
   return (
     <div>
-      <h1>Hello world</h1>
       <UserButton />
-      <ModalCreateWorkspace open={!workspaceId} />
+      <CreateWorkspaceModal open={!workspaceId} />
     </div>
   )
 }

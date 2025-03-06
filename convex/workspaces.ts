@@ -66,8 +66,8 @@ export const create = mutation({
   args: { workspace_name: v.string() },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
-    if (userId === null) {
-      return new Error('Unauthorized')
+    if (!userId) {
+      throw new Error('Unauthorized')
     }
 
     const joinCode = generateCode()

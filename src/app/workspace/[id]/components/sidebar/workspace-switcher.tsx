@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace'
 import { useGetWorkspaces } from '@/features/workspaces/api/use-get-workspaces'
-import { ModalCreateWorkspace } from '@/features/workspaces/components/modal-create-workspace'
+import { CreateWorkspaceModal } from '@/features/workspaces/components/create-workspace-modal'
 import { useCreateWorkspaceModal } from '@/features/workspaces/store/use-create-workspace-modal'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
@@ -90,7 +90,7 @@ export function WorkspaceSwitcher() {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <ModalCreateWorkspace open={openModal} />
+      <CreateWorkspaceModal open={openModal} />
     </>
   )
 }

@@ -25,13 +25,13 @@ import {
   type CreateWorkspaceFormSchemaOutput,
 } from './schema/create-worskpace-form-schema'
 
-interface ModalCreateWorkspaceProps {
+interface CreateWorkspaceModalProps {
   open: boolean
 }
 
-export function ModalCreateWorkspace({
+export function CreateWorkspaceModal({
   open: openModal,
-}: ModalCreateWorkspaceProps) {
+}: CreateWorkspaceModalProps) {
   const pathname = usePathname()
   const [open, setOpen] = useCreateWorkspaceModal()
   const router = useRouter()

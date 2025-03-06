@@ -1,6 +1,7 @@
 import { convexAuthNextjsToken } from '@convex-dev/auth/nextjs/server'
 import { preloadQuery } from 'convex/nextjs'
 import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 
@@ -15,6 +16,10 @@ import type { Id } from '../../../../convex/_generated/dataModel'
 import { Sidebar } from './components/sidebar'
 import { Toolbar } from './components/toolbar'
 import { WorkspaceSidebar } from './components/workspace-sidebar'
+
+const CreateChannelModal = dynamic(
+  () => import('@/features/channels/components/create-channel-modal'),
+)
 
 interface WorkspaceIdLayoutProps {
   params: Promise<{
@@ -63,25 +68,28 @@ export default async function WorkspaceIdLayout({
     redirect('/')
   }
   return (
-    <div className="min-h-screen">
-      <Toolbar />
-      <div className="flex h-[calc(100vh-40px)]">
-        <Sidebar />
-        <ResizablePanelGroup
-          direction="horizontal"
-          autoSaveId="ca-workspace-id"
-        >
-          <ResizablePanel
-            defaultSize={20}
-            minSize={11}
-            className="bg-slack-purple-600"
+    <>
+      <div className="min-h-screen">
+        <Toolbar />
+        <div className="flex h-[calc(100vh-40px)]">
+          <Sidebar />
+          <ResizablePanelGroup
+            direction="horizontal"
+            autoSaveId="ca-workspace-id"
           >
-            <WorkspaceSidebar />
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel minSize={20}>{children}</ResizablePanel>
-        </ResizablePanelGroup>
+            <ResizablePanel
+              defaultSize={20}
+              minSize={11}
+              className="bg-slack-purple-600"
+            >
+              <WorkspaceSidebar />
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel minSize={20}>{children}</ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
       </div>
-    </div>
+      <CreateChannelModal />
+    </>
   )
 }
