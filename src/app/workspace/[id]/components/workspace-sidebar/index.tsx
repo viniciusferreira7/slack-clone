@@ -10,10 +10,12 @@ import {
 
 import { useGetChannels } from '@/features/channels/api/use-get-channels'
 import { useCurrentMember } from '@/features/members/api/use-current-member'
+import { useGetMembers } from '@/features/members/api/use-get-members'
 import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
 import { SidebarItem } from './sidebar-item'
+import { UserItem } from './user-item'
 import { WorkspaceHeader } from './workspace-header'
 import { WorkspaceSection } from './workspace-section'
 
@@ -30,7 +32,16 @@ export function WorkspaceSidebar() {
     workspaceId,
   })
 
-  if (isMemberLoading || isWorkspaceLoading || isChannelsLoading) {
+  const { data: members, isLoading: isMembersLoading } = useGetMembers({
+    workspaceId,
+  })
+
+  if (
+    isMemberLoading ||
+    isWorkspaceLoading ||
+    isChannelsLoading ||
+    isMembersLoading
+  ) {
     return (
       <div className="flex h-full flex-col items-center justify-center bg-slack-purple-600">
         <Loader className="size-5 animate-spin text-white" />
@@ -54,8 +65,18 @@ export function WorkspaceSidebar() {
         isAdmin={member?.role === 'admin'}
       />
       <div className="mt-3 flex flex-col px-2">
-        <SidebarItem id="threads" label="Threads" icon={MessageSquareText} />
-        <SidebarItem id="drafts" label="Drafts & Send" icon={SendHorizontal} />
+        <SidebarItem
+          id="threads"
+          label="Threads"
+          icon={MessageSquareText}
+          workspaceId={workspaceId}
+        />
+        <SidebarItem
+          id="drafts"
+          label="Drafts & Send"
+          icon={SendHorizontal}
+          workspaceId={workspaceId}
+        />
       </div>
       <WorkspaceSection label="Channels" hint="New channel" onNew={() => {}}>
         {channels?.map((item) => {
@@ -65,10 +86,26 @@ export function WorkspaceSidebar() {
               id={item._id}
               label={item.name}
               icon={HashIcon}
+              workspaceId={workspaceId}
             />
           )
         })}
       </WorkspaceSection>
+      {!!members?.length && (
+        <WorkspaceSection label="Direct Messages" hint="New direct message">
+          {members?.map((item) => {
+            return (
+              <UserItem
+                key={item._id}
+                id={item._id}
+                label={item.user.name}
+                image={item.user.image}
+                workspaceId={workspaceId}
+              />
+            )
+          })}
+        </WorkspaceSection>
+      )}
     </div>
   )
 }

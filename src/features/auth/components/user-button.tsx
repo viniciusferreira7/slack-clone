@@ -38,9 +38,11 @@ export function UserButton() {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="relative outline-none">
-        <Avatar className="size-10 transition hover:opacity-75">
+        <Avatar className="size-10 rounded-md transition hover:opacity-75">
           <AvatarImage alt={name} src={image} />
-          <AvatarFallback>{avatarFallback}</AvatarFallback>
+          <AvatarFallback className="rounded-md bg-sky-500 text-white">
+            <span className="text-xs">{avatarFallback}</span>
+          </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center" side="right" className="w-60">

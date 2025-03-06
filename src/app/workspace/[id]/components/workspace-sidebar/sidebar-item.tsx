@@ -3,8 +3,9 @@ import type { LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
-import { useWorkspaceId } from '@/hooks/use-workspace-id'
 import { cn } from '@/lib/utils'
+
+import type { Id } from '../../../../../../convex/_generated/dataModel'
 
 const sidebarItemVariants = cva(
   'flex items-center bg-transparent gap-1.5 justify-start font-normal h-7 px-[18px] text-sm overflow-hidden',
@@ -26,6 +27,7 @@ interface SidebarItemProps {
   label: string
   icon: LucideIcon
   variant?: VariantProps<typeof sidebarItemVariants>['variant']
+  workspaceId: Id<'workspaces'>
 }
 
 export function SidebarItem({
@@ -33,9 +35,8 @@ export function SidebarItem({
   label,
   icon: Icon,
   variant,
+  workspaceId,
 }: SidebarItemProps) {
-  const workspaceId = useWorkspaceId()
-
   return (
     <Button className={cn(sidebarItemVariants({ variant }))} size="sm" asChild>
       <Link href={`/workspace/${workspaceId}/channel/${id}`}>

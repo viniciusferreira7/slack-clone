@@ -40,6 +40,9 @@ export const get = query({
     const members = await Promise.all(
       data.map(async (item) => {
         const user = await getUserById(ctx, item.userId)
+
+        if (!user) return
+
         return {
           ...member,
           user,
@@ -47,7 +50,7 @@ export const get = query({
       }),
     )
 
-    return members.filter((item) => !!item?._id)
+    return members.filter((item) => !!item)
   },
 })
 
