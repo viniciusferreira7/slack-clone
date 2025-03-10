@@ -32,6 +32,7 @@ export function WorkspaceHeader({ workspace, isAdmin }: WorkspaceHeaderProps) {
         open={inviteOpen}
         onOpenChange={setInviteOpen}
         workspace={workspace}
+        isAdmin={isAdmin}
       />
       <PreferencesModal
         open={preferencesOpen}
