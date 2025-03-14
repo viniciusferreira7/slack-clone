@@ -42,12 +42,15 @@ export async function generateMetadata({
   )
 
   // FIXME: Come a object, but type is a string, you can see putting a log in workspace data
-  const workspaceData = preloadedWorkspace._valueJSON
+  const workspaceData = preloadedWorkspace._valueJSON as unknown as {
+    name: string
+  }
 
   return {
     title: `${workspaceData?.name} - Workspace`,
   }
 }
+
 export default async function WorkspaceIdLayout({
   params,
   children,

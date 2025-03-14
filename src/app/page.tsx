@@ -24,7 +24,9 @@ export default async function Home() {
     )
 
     if (preloadedWorkspace._valueJSON) {
-      const workspaceData = preloadedWorkspace._valueJSON
+      const workspaceData = preloadedWorkspace._valueJSON as unknown as {
+        _id: string
+      }
 
       // FIXME: Come a object, but type is a string, you can see putting a log in workspace data
       redirect(`/workspace/${workspaceData?._id}`)

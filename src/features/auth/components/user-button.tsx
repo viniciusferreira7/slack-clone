@@ -3,7 +3,6 @@
 import { useAuthActions } from '@convex-dev/auth/react'
 import { Loader, LogOut } from 'lucide-react'
 
-import { deleteCookie } from '@/app/utils/cookie/delete-cookie'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -11,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { deleteCookie } from '@/utils/cookies/delete-cookie'
 
 import { useCurrentUser } from '../api/use-current-user'
 
