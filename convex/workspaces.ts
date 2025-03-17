@@ -4,9 +4,12 @@ import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 
 const generateCode = () => {
-  const timestamp = new Date().getTime()
-  const randomPart = Math.random().toString(36).substring(2, 8)
-  const code = `${timestamp}${randomPart}`
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let code = ''
+  for (let i = 0; i < 8; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length)
+    code += chars[randomIndex]
+  }
   return code
 }
 

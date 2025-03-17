@@ -31,8 +31,9 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
     const workspaceIdFromCookies = request.cookies.get('workspace-id')?.value
 
     const isHomePage = pathname === '/'
+    const isJoinPage = pathname.includes('/join')
 
-    if (!workspaceIdFromCookies && !isHomePage) {
+    if (!workspaceIdFromCookies && !isHomePage && !isJoinPage) {
       return nextjsMiddlewareRedirect(request, `/`)
     }
   }
