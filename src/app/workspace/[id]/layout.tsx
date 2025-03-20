@@ -55,15 +55,40 @@ export default async function WorkspaceIdLayout({
 }: WorkspaceIdLayoutProps) {
   const { id } = await params
 
-  const preloadedWorkspace = await preloadQuery(
-    api.workspaces.getById,
-    {
-      id: id as Id<'workspaces'>,
-    },
-    { token: await convexAuthNextjsToken() },
-  )
+  const [preloadedWorkspace, preloadedCurrentMember, preloadedChannels] =
+    await Promise.all([
+      preloadQuery(
+        api.workspaces.getById,
+        {
+          id: id as Id<'workspaces'>,
+        },
+        { token: await convexAuthNextjsToken() },
+      ),
+      preloadQuery(
+        api.members.currentMember,
+        {
+          workspaceId: id as Id<'workspaces'>,
+        },
+        { token: await convexAuthNextjsToken() },
+      ),
+      preloadQuery(
+        api.channels.get,
+        {
+          workspaceId: id as Id<'workspaces'>,
+        },
+        { token: await convexAuthNextjsToken() },
+      ),
+    ])
 
-  const workspaceData = preloadedWorkspace._valueJSON
+  const workspaceData =
+    preloadedWorkspace._valueJSON as unknown as Doc<'workspaces'>
+
+  const currentMemberData =
+    preloadedCurrentMember._valueJSON as unknown as Doc<'members'>
+
+  const channelsData = preloadedChannels._valueJSON as unknown as Array<
+    Doc<'channels'>
+  >
 
   if (!workspaceData) {
     redirect('/')
@@ -83,7 +108,11 @@ export default async function WorkspaceIdLayout({
               minSize={11}
               className="bg-slack-purple-600"
             >
-              <WorkspaceSidebar />
+              <WorkspaceSidebar
+                workspace={workspaceData}
+                currentMember={currentMemberData}
+                channels={channelsData}
+              />
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={90} minSize={20}>
