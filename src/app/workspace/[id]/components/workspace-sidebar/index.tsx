@@ -13,6 +13,7 @@ import { useCreateChannelModal } from '@/features/channels/store/use-create-chan
 import { useCurrentMember } from '@/features/members/api/use-current-member'
 import { useGetMembers } from '@/features/members/api/use-get-members'
 import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace'
+import { useChannelId } from '@/hooks/use-channel-id'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
 import { SidebarItem } from './sidebar-item'
@@ -22,6 +23,7 @@ import { WorkspaceSection } from './workspace-section'
 
 export function WorkspaceSidebar() {
   const workspaceId = useWorkspaceId()
+  const channelId = useChannelId()
   const { data: member, isLoading: isMemberLoading } = useCurrentMember({
     workspaceId,
   })
@@ -61,9 +63,6 @@ export function WorkspaceSidebar() {
     )
   }
 
-  console.log({ channels })
-  console.log({ members })
-
   return (
     <div className="flex flex-col bg-slack-purple-600 p-4">
       <WorkspaceHeader
@@ -97,6 +96,7 @@ export function WorkspaceSidebar() {
               label={item.name}
               icon={HashIcon}
               workspaceId={workspaceId}
+              variant={channelId === item._id ? 'active' : 'default'}
             />
           )
         })}
