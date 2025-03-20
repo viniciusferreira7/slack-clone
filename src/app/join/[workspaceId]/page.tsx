@@ -32,13 +32,10 @@ export default async function JoinPage({ params }: JoinPageProps) {
     { token: await convexAuthNextjsToken() },
   )
 
-  // FIXME: Come a object, but type is a string, you can see putting a log in workspace data
   const workspaceData = preloadedWorkspace._valueJSON as unknown as {
     name: string
     isMember: boolean
   }
-
-  console.log({ workspaceData })
 
   if (workspaceData.isMember) {
     redirect(`/workspace/${workspaceId}`)

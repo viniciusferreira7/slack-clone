@@ -1,6 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -22,9 +24,17 @@ import {
   createChannelSchema,
 } from './schema/create-channel-schema'
 
-export default function CreateChannelModal() {
+interface CreateChannelModalProps {
+  isOpen?: boolean
+}
+
+export default function CreateChannelModal({
+  isOpen = false,
+}: CreateChannelModalProps) {
   const [open, setOpen] = useCreateChannelModal()
   const workspaceId = useWorkspaceId()
+
+  const router = useRouter()
 
   const {
     handleSubmit,
@@ -37,17 +47,18 @@ export default function CreateChannelModal() {
   const { mutate, isPending } = useCreateChannel()
 
   async function handleCreateChannel(data: CreateChannelSchema) {
-    console.log(data)
-
     await mutate(
       {
         name: data.name,
         workspaceId,
       },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
           toast.success('Channel was created')
           setOpen(false)
+          router.push(
+            `/workspace/${data.workspaceId}/channel/${data.channelId}`,
+          )
         },
         onError: () => {
           toast.error('An error occurred when creating the channel')
@@ -55,6 +66,12 @@ export default function CreateChannelModal() {
       },
     )
   }
+
+  useEffect(() => {
+    if (isOpen) {
+      setOpen(true)
+    }
+  }, [isOpen, setOpen])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

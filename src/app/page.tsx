@@ -7,7 +7,7 @@ import { UserButton } from '@/features/auth/components/user-button'
 import { CreateWorkspaceModal } from '@/features/workspaces/components/create-workspace-modal'
 
 import { api } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
+import type { Doc, Id } from '../../convex/_generated/dataModel'
 
 export default async function Home() {
   const cookieStore = await cookies()
@@ -24,11 +24,9 @@ export default async function Home() {
     )
 
     if (preloadedWorkspace._valueJSON) {
-      const workspaceData = preloadedWorkspace._valueJSON as unknown as {
-        _id: string
-      }
+      const workspaceData =
+        preloadedWorkspace._valueJSON as unknown as Doc<'workspaces'>
 
-      // FIXME: Come a object, but type is a string, you can see putting a log in workspace data
       redirect(`/workspace/${workspaceData?._id}`)
     }
   }

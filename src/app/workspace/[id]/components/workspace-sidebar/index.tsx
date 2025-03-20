@@ -9,7 +9,6 @@ import {
 } from 'lucide-react'
 
 import { useGetChannels } from '@/features/channels/api/use-get-channels'
-import { CreateChannelModal } from '@/features/channels/components/create-channel-modal'
 import { useCreateChannelModal } from '@/features/channels/store/use-create-channel-modal'
 import { useCurrentMember } from '@/features/members/api/use-current-member'
 import { useGetMembers } from '@/features/members/api/use-get-members'
@@ -61,6 +60,9 @@ export function WorkspaceSidebar() {
       </div>
     )
   }
+
+  console.log({ channels })
+  console.log({ members })
 
   return (
     <div className="flex flex-col bg-slack-purple-600 p-4">

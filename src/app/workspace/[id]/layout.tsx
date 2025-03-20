@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/resizable'
 
 import { api } from '../../../../convex/_generated/api'
-import type { Id } from '../../../../convex/_generated/dataModel'
+import type { Doc, Id } from '../../../../convex/_generated/dataModel'
 import { Sidebar } from './components/sidebar'
 import { Toolbar } from './components/toolbar'
 import { WorkspaceSidebar } from './components/workspace-sidebar'
@@ -41,10 +41,8 @@ export async function generateMetadata({
     { token: await convexAuthNextjsToken() },
   )
 
-  // FIXME: Come a object, but type is a string, you can see putting a log in workspace data
-  const workspaceData = preloadedWorkspace._valueJSON as unknown as {
-    name: string
-  }
+  const workspaceData =
+    preloadedWorkspace._valueJSON as unknown as Doc<'workspaces'>
 
   return {
     title: `${workspaceData?.name} - Workspace`,
@@ -88,7 +86,9 @@ export default async function WorkspaceIdLayout({
               <WorkspaceSidebar />
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel minSize={20}>{children}</ResizablePanel>
+            <ResizablePanel defaultSize={90} minSize={20}>
+              {children}
+            </ResizablePanel>
           </ResizablePanelGroup>
         </div>
       </div>
