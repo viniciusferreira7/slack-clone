@@ -1,12 +1,13 @@
 import { convexAuthNextjsToken } from '@convex-dev/auth/nextjs/server'
 import { preloadQuery } from 'convex/nextjs'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, TriangleAlert } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 
 import { api } from '../../../../../../convex/_generated/api'
-import type { Id } from '../../../../../../convex/_generated/dataModel'
+import type { Doc, Id } from '../../../../../../convex/_generated/dataModel'
+import { Header } from './components/header'
 
 interface ChannelProps {
   params: Promise<{
@@ -31,7 +32,12 @@ export default async function ChannelPage({ params }: ChannelProps) {
     return (
       <div className="grid h-full place-items-center">
         <div className="flex flex-col items-center gap-y-4 rounded-md border p-12 shadow-2xl">
-          <p className="text-2xl font-semibold">No channel found</p>
+          <div className="flex flex-col items-center gap-y-3">
+            <TriangleAlert className="size-7 text-muted-foreground" />
+            <p className="text-2xl font-semibold text-muted-foreground">
+              No channels found
+            </p>
+          </div>
           <Button asChild>
             <Link href={`/workspace/${workspaceId}`}>
               <ArrowLeft className="size-4 shrink-0" /> Go back to workspace
@@ -42,5 +48,11 @@ export default async function ChannelPage({ params }: ChannelProps) {
     )
   }
 
-  return <div className="">Channel</div>
+  const channelsData = preloadedChannel._valueJSON as unknown as Doc<'channels'>
+
+  return (
+    <div className="flex h-full flex-col">
+      <Header channel={channelsData} />
+    </div>
+  )
 }

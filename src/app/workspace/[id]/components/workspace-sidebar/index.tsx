@@ -93,6 +93,13 @@ export function WorkspaceSidebar({
           )
         })}
       </WorkspaceSection>
+      {members?.length === 0 && (
+        <WorkspaceSection label="Direct Messages" hint="New direct message">
+          <div className="mt-2 flex items-center justify-center">
+            <p className="text-sm font-semibold text-muted">No members found</p>
+          </div>
+        </WorkspaceSection>
+      )}
       {members?.length && !isMembersLoading ? (
         <WorkspaceSection label="Direct Messages" hint="New direct message">
           {members?.map((item) => {
