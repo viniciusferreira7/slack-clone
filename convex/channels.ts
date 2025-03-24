@@ -32,11 +32,11 @@ export const update = mutation({
       throw new Error('Unauthorized')
     }
 
-    const updatedChannelId = ctx.db.patch(args.channelId, {
+    await ctx.db.patch(args.channelId, {
       name: args.name,
     })
 
-    return { channelId: updatedChannelId, workspaceId: channel.workspaceId }
+    return { channelId: channel._id, workspaceId: channel.workspaceId }
   },
 })
 
