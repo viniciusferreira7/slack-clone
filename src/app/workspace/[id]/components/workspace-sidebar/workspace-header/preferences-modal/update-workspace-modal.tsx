@@ -86,7 +86,7 @@ export function UpdateWorkspaceModal({
               <p className="text-sm font-semibold">Workspace name</p>
               <p className="text-sm">{workspaceName}</p>
             </div>
-            <p className="text-sm text-slack-blue-700">Edit</p>
+            <p className="text-slack-blue-200 text-sm">Edit</p>
           </div>
         </DialogTrigger>
         <DialogContent>
