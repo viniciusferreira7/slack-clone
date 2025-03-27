@@ -1,5 +1,6 @@
 import { convexAuthNextjsToken } from '@convex-dev/auth/nextjs/server'
 import { preloadQuery } from 'convex/nextjs'
+import type { Metadata } from 'next'
 
 import { api } from '../../../../convex/_generated/api'
 import type { Doc, Id } from '../../../../convex/_generated/dataModel'
@@ -9,6 +10,27 @@ interface WorkspacePageProps {
   params: Promise<{
     id: string
   }>
+}
+
+export async function generateMetadata({
+  params,
+}: WorkspacePageProps): Promise<Metadata> {
+  const { id } = await params
+
+  const preloadedWorkspace = await preloadQuery(
+    api.workspaces.getById,
+    {
+      id: id as Id<'workspaces'>,
+    },
+    { token: await convexAuthNextjsToken() },
+  )
+
+  const workspaceData =
+    preloadedWorkspace._valueJSON as unknown as Doc<'workspaces'>
+
+  return {
+    title: `${workspaceData?.name} - Workspace`,
+  }
 }
 
 export default async function WorkspacePage({ params }: WorkspacePageProps) {

@@ -1,6 +1,5 @@
 import { convexAuthNextjsToken } from '@convex-dev/auth/nextjs/server'
 import { preloadQuery } from 'convex/nextjs'
-import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
@@ -26,27 +25,6 @@ interface WorkspaceIdLayoutProps {
     id: string
   }>
   children: ReactNode
-}
-
-export async function generateMetadata({
-  params,
-}: WorkspaceIdLayoutProps): Promise<Metadata> {
-  const { id } = await params
-
-  const preloadedWorkspace = await preloadQuery(
-    api.workspaces.getById,
-    {
-      id: id as Id<'workspaces'>,
-    },
-    { token: await convexAuthNextjsToken() },
-  )
-
-  const workspaceData =
-    preloadedWorkspace._valueJSON as unknown as Doc<'workspaces'>
-
-  return {
-    title: `${workspaceData?.name} - Workspace`,
-  }
 }
 
 export default async function WorkspaceIdLayout({

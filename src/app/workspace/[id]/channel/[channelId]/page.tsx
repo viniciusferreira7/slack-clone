@@ -1,6 +1,7 @@
 import { convexAuthNextjsToken } from '@convex-dev/auth/nextjs/server'
 import { preloadQuery } from 'convex/nextjs'
 import { ArrowLeft, TriangleAlert } from 'lucide-react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,39 @@ interface ChannelProps {
     id: string
     channelId: string
   }>
+}
+
+export async function generateMetadata({
+  params,
+}: ChannelProps): Promise<Metadata> {
+  const { id: workspaceId, channelId } = await params
+
+  const [preloadedWorkspace, preloadedChannel] = await Promise.all([
+    preloadQuery(
+      api.workspaces.getById,
+      {
+        id: workspaceId as Id<'workspaces'>,
+      },
+      { token: await convexAuthNextjsToken() },
+    ),
+    preloadQuery(
+      api.channels.getById,
+      {
+        workspaceId: workspaceId as Id<'workspaces'>,
+        channelId: channelId as Id<'channels'>,
+      },
+      { token: await convexAuthNextjsToken() },
+    ),
+  ])
+
+  const workspaceData =
+    preloadedWorkspace._valueJSON as unknown as Doc<'workspaces'>
+
+  const channelData = preloadedChannel._valueJSON as unknown as Doc<'channels'>
+
+  return {
+    title: `${channelData?.name} | ${workspaceData.name} - Workspace`,
+  }
 }
 
 export default async function ChannelPage({ params }: ChannelProps) {
