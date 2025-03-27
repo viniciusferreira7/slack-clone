@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useRemoveChannel } from '@/features/channels/api/use-remove-channel'
+import { useCurrentMember } from '@/features/members/api/use-current-member'
 import { useConfirm } from '@/hooks/use-confirm'
 
 import type { Doc } from '../../../../../../../../convex/_generated/dataModel'
@@ -32,6 +33,10 @@ export function Header({ channel }: HeaderProps) {
     title: 'Delete channel',
     message:
       'You are about to delete this channel. This action is irreversible',
+  })
+
+  const { data: currentMember } = useCurrentMember({
+    workspaceId: channel.workspaceId,
   })
 
   const { mutate: mutateRemoveChannel, isPending: isRemovePending } =
@@ -60,10 +65,11 @@ export function Header({ channel }: HeaderProps) {
     )
   }
 
+  const isAdmin = currentMember?.role === 'admin'
+
   return (
     <>
       <DialogConfirm />
-
       <header className="flex h-[49px] items-center overflow-hidden border-b bg-white px-4">
         <Dialog>
           <DialogTrigger asChild>
@@ -86,15 +92,17 @@ export function Header({ channel }: HeaderProps) {
                 open={isRemovePending ? false : editOpen}
                 onOpenChange={setEditOpen}
               />
-              <Button
-                variant="ghost"
-                className="flex gap-x-2 border bg-white px-5 py-4 text-rose-600 hover:bg-gray-50"
-                disabled={isRemovePending}
-                onClick={handleRemoveChannel}
-              >
-                <TrashIcon className="size-4 shrink-0" />
-                <p className="text-sm font-semibold">Delete channel</p>
-              </Button>
+              {isAdmin && (
+                <Button
+                  variant="ghost"
+                  className="flex gap-x-2 border bg-white px-5 py-4 text-rose-600 hover:bg-gray-50"
+                  disabled={isRemovePending}
+                  onClick={handleRemoveChannel}
+                >
+                  <TrashIcon className="size-4 shrink-0" />
+                  <p className="text-sm font-semibold">Delete channel</p>
+                </Button>
+              )}
             </div>
           </DialogContent>
         </Dialog>

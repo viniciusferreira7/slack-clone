@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { useUpdateChannel } from '@/features/channels/api/use-update-channel'
+import { useCurrentMember } from '@/features/members/api/use-current-member'
 import { cn } from '@/lib/utils'
 
 import type { Doc } from '../../../../../../../../convex/_generated/dataModel'
@@ -44,6 +45,10 @@ export function EditChannelModal({
     },
   })
 
+  const { data: currentMember } = useCurrentMember({
+    workspaceId: channel.workspaceId,
+  })
+
   const { mutate: mutateUpdateChannel, isPending: isUpdatePending } =
     useUpdateChannel()
 
@@ -67,9 +72,11 @@ export function EditChannelModal({
     )
   }
 
+  const isAdmin = currentMember?.role === 'admin'
+
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={isAdmin ? open : false} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>
           <div className="cursor-pointer rounded-lg border bg-white px-5 py-4 hover:bg-gray-50">
             <div className="flex items-center justify-between">
