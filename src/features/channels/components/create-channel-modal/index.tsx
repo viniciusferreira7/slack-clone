@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
+import { refreshData } from '@/app/workspace/actions'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -53,9 +54,11 @@ export default function CreateChannelModal({
         workspaceId,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
           toast.success('Channel was created')
           setOpen(false)
+          await refreshData('/workspace')
+
           router.push(
             `/workspace/${data.workspaceId}/channel/${data.channelId}`,
           )

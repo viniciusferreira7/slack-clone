@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import { refreshData } from '@/app/workspace/actions'
 import {
   Dialog,
   DialogContent,
@@ -57,6 +58,8 @@ export function PreferencesModal({
       {
         onSuccess: async () => {
           toast.success('Workspace was removed')
+          await refreshData('/workspace')
+
           if (anotherWorkspace?.[0]) {
             router.replace(`/workspace/${anotherWorkspace?.[0]._id}`)
           } else {
