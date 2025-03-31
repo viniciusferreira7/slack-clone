@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 
 import { api } from '../../../../../../convex/_generated/api'
 import type { Doc, Id } from '../../../../../../convex/_generated/dataModel'
+import { ChatInput } from './components/chat-input'
 import { Header } from './components/header'
 
 interface ChannelProps {
@@ -87,6 +88,8 @@ export default async function ChannelPage({ params }: ChannelProps) {
   return (
     <div className="flex h-full flex-col">
       <Header channel={channelsData} />
+      <div className="flex-1" />
+      <ChatInput />
     </div>
   )
 }
