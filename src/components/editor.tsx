@@ -32,7 +32,7 @@ export default function Editor() {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white transition focus-within:border-slate-300 focus-within:shadow-sm">
-        <div ref={containerRef} />
+        <div ref={containerRef} className="ql-custom h-full" />
       </div>
     </div>
   )
