@@ -12,6 +12,8 @@ import {
   useState,
 } from 'react'
 
+import { cn } from '@/lib/utils'
+
 import { Hint } from './hint'
 import { Button } from './ui/button'
 
@@ -40,6 +42,7 @@ export default function Editor({
   innerRef,
 }: EditorProps) {
   const [text, setText] = useState('')
+  const [isToolbarVisible, setIsToolbarVisible] = useState(true)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const submitRef = useRef(onSubmit)
@@ -66,6 +69,30 @@ export default function Editor({
     const options: QuillOptions = {
       theme: 'snow',
       placeholder: placeholderRef.current,
+      modules: {
+        toolbar: [
+          ['bold', 'strike', 'italic'],
+          ['link'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+        ],
+        keyboard: {
+          bindings: {
+            enter: {
+              key: 'Enter',
+              handler: () => {
+                // TODO: Send data form
+              },
+            },
+            shift_enter: {
+              key: 'Enter',
+              shiftKey: true,
+              handler: () => {
+                quill.insertText(quill.getSelection()?.index || 0, '\n')
+              },
+            },
+          },
+        },
+      },
     }
 
     const quill = new Quill(editorContainer, options)
@@ -84,7 +111,8 @@ export default function Editor({
     })
 
     return () => {
-      quill.on(Quill.events.TEXT_CHANGE)
+      quill.off(Quill.events.TEXT_CHANGE)
+
       if (container) {
         container.innerHTML = ''
       }
@@ -99,39 +127,59 @@ export default function Editor({
     }
   }, [innerRef])
 
-  const isTextEmpty = text.length === 0
+  const toggleToolbar = () => {
+    setIsToolbarVisible((state) => !state)
+    const toolbarElement = containerRef.current?.querySelector('.ql-toolbar')
+
+    if (toolbarElement) {
+      toolbarElement.classList.toggle('hidden')
+    }
+  }
+
+  const isTextEmpty = text.replace(/<(.|\n)*?>/g, '').trim().length === 0
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white transition focus-within:border-slate-300 focus-within:shadow-sm">
         <div ref={containerRef} className="ql-custom h-full" />
         <div className="z-[5] flex px-2 pb-2">
-          <Hint label="Hide formatting">
-            <Button disabled variant="ghost" size="iconSm">
+          <Hint
+            label={isToolbarVisible ? 'Hide formatting' : 'Show formatting'}
+          >
+            <Button
+              disabled={disabled}
+              variant="ghost"
+              size="iconSm"
+              onClick={toggleToolbar}
+            >
               <CaseSensitive className="size-4" />
             </Button>
           </Hint>
           <Hint label="Emoji">
-            <Button disabled variant="ghost" size="iconSm">
+            <Button disabled={disabled} variant="ghost" size="iconSm">
               <Smile className="size-4" />
             </Button>
           </Hint>
           {variant === 'create' && (
             <Hint label="Image">
-              <Button disabled variant="ghost" size="iconSm">
+              <Button disabled={disabled} variant="ghost" size="iconSm">
                 <ImageIcon className="size-4" />
               </Button>
             </Hint>
           )}
           {variant === 'update' && (
             <div className="ml-auto flex items-center gap-x-2">
-              <Button variant="outline" size="sm" disabled>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={disabled || !onCancel}
+              >
                 Cancel
               </Button>
               <Button
                 className="bg-[#007a5a] text-white hover:bg-[#007a5a]/80"
                 size="sm"
-                disabled={!!text}
+                disabled={disabled || isTextEmpty}
               >
                 Save
               </Button>
@@ -139,9 +187,14 @@ export default function Editor({
           )}
           {variant === 'create' && (
             <Button
-              disabled
-              className="ml-auto bg-[#007a5a] text-white hover:bg-[#007a5a]/80"
+              className={cn(
+                'ml-auto',
+                isTextEmpty
+                  ? 'bg-white text-muted-foreground hover:bg-white'
+                  : 'bg-[#007a5a] text-white hover:bg-[#007a5a]/80',
+              )}
               size="iconSm"
+              disabled={disabled || isTextEmpty}
             >
               <Send className="size-4" />
             </Button>
