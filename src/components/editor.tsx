@@ -14,6 +14,7 @@ import {
 
 import { cn } from '@/lib/utils'
 
+import { EmojiPopover } from './emoji-popover'
 import { Hint } from './hint'
 import { Button } from './ui/button'
 
@@ -136,6 +137,16 @@ export default function Editor({
     }
   }
 
+  // FIXME: The lib @emoji/mart doesn't provide the type of emoji
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function handleSelectEmoji(emoji: any) {
+    const quill = quillRef.current
+
+    if (quill) {
+      quill.insertText(quill.getSelection()?.index || 0, emoji?.native)
+    }
+  }
+
   const isTextEmpty = text.replace(/<(.|\n)*?>/g, '').trim().length === 0
 
   return (
@@ -155,11 +166,11 @@ export default function Editor({
               <CaseSensitive className="size-4" />
             </Button>
           </Hint>
-          <Hint label="Emoji">
+          <EmojiPopover hint="Emoji" onEmojiSelect={handleSelectEmoji}>
             <Button disabled={disabled} variant="ghost" size="iconSm">
               <Smile className="size-4" />
             </Button>
-          </Hint>
+          </EmojiPopover>
           {variant === 'create' && (
             <Hint label="Image">
               <Button disabled={disabled} variant="ghost" size="iconSm">
@@ -201,11 +212,18 @@ export default function Editor({
           )}
         </div>
       </div>
-      <div className="ml-auto p-2 text-[10px] text-muted-foreground">
-        <p>
-          <strong>Shift + Return</strong> to add new line
-        </p>
-      </div>
+      {variant === 'create' && (
+        <div
+          className={cn(
+            'ml-auto p-2 text-[10px] text-muted-foreground opacity-0 transition',
+            isTextEmpty && 'opacity-100',
+          )}
+        >
+          <p>
+            <strong>Shift + Return</strong> to add new line
+          </p>
+        </div>
+      )}
     </div>
   )
 }
