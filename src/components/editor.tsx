@@ -2,7 +2,8 @@
 
 import 'quill/dist/quill.snow.css'
 
-import { CaseSensitive, ImageIcon, Send, Smile } from 'lucide-react'
+import { CaseSensitive, ImageIcon, Send, Smile, XIcon } from 'lucide-react'
+import Image from 'next/image'
 import Quill, { type Delta, type Op, type QuillOptions } from 'quill'
 import {
   type RefObject,
@@ -11,6 +12,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
 
@@ -44,6 +46,7 @@ export default function Editor({
 }: EditorProps) {
   const [text, setText] = useState('')
   const [isToolbarVisible, setIsToolbarVisible] = useState(true)
+  const [image, setImage] = useState<File | null>(null)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const submitRef = useRef(onSubmit)
@@ -51,6 +54,7 @@ export default function Editor({
   const quillRef = useRef<Quill | null>(null)
   const defaultValueRef = useRef(defaultValue)
   const disabledRef = useRef(disabled)
+  const imageElementRef = useRef<HTMLInputElement>(null)
 
   useLayoutEffect(() => {
     submitRef.current = onSubmit
@@ -149,10 +153,63 @@ export default function Editor({
 
   const isTextEmpty = text.replace(/<(.|\n)*?>/g, '').trim().length === 0
 
+  function handleSelectImage(uploadedFile: File | null) {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    const maxSizeInBytes = 5 * 1024 * 1024 // 5MB
+
+    if (!uploadedFile) return
+
+    const isAllowedType = allowedTypes.includes(uploadedFile.type)
+    const isAllowedSize = uploadedFile.size <= maxSizeInBytes
+
+    if (isAllowedType && isAllowedSize) {
+      setImage(uploadedFile)
+    } else {
+      toast.error(
+        'Invalid image. Allowed types: JPG, PNG, WEBP, GIF. Max: 5MB.',
+      )
+    }
+  }
+
   return (
     <div className="flex flex-col">
+      <input
+        ref={imageElementRef}
+        type="file"
+        accept="image/jpeg, image/png, image/webp, image/gif"
+        onChange={(event) =>
+          handleSelectImage(event?.target?.files?.[0] || null)
+        }
+        className="hidden"
+      />
       <div className="flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white transition focus-within:border-slate-300 focus-within:shadow-sm">
         <div ref={containerRef} className="ql-custom h-full" />
+        {!!image && (
+          <div className="p-2">
+            <div className="group/image relative grid size-[62px] place-items-center">
+              <Hint label="Remove image">
+                <button
+                  className="absolute -right-2.5 -top-2.5 z-[4] hidden items-center rounded-full border-2 border-white bg-black/70 text-white hover:bg-black group-hover/image:flex"
+                  onClick={() => {
+                    setImage(null)
+                    if (imageElementRef.current?.value) {
+                      imageElementRef.current.value = ''
+                    }
+                  }}
+                >
+                  <span className="sr-only">remove image</span>
+                  <XIcon className="size-3.5" />
+                </button>
+              </Hint>
+              <Image
+                alt={`Uploaded: ${image.name}`}
+                src={URL.createObjectURL(image)}
+                fill
+                className="overflow-hidden rounded-xl border object-cover"
+              />
+            </div>
+          </div>
+        )}
         <div className="z-[5] flex px-2 pb-2">
           <Hint
             label={isToolbarVisible ? 'Hide formatting' : 'Show formatting'}
@@ -173,7 +230,16 @@ export default function Editor({
           </EmojiPopover>
           {variant === 'create' && (
             <Hint label="Image">
-              <Button disabled={disabled} variant="ghost" size="iconSm">
+              <Button
+                disabled={disabled}
+                variant="ghost"
+                size="iconSm"
+                onClick={() => {
+                  if (imageElementRef?.current) {
+                    imageElementRef?.current?.click()
+                  }
+                }}
+              >
                 <ImageIcon className="size-4" />
               </Button>
             </Hint>
