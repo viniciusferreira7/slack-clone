@@ -22,7 +22,7 @@ export const create = mutation({
     body: v.string(),
     image: v.optional(v.id('_storage')),
     memberId: v.id('members'),
-    workspacesId: v.id('workspaces'),
+    workspaceId: v.id('workspaces'),
     channelId: v.optional(v.id('channels')),
     parentMessageId: v.optional(v.id('messages')),
     // TODO: Add conversation id here
@@ -34,7 +34,7 @@ export const create = mutation({
       throw new Error('Unauthorized')
     }
 
-    const member = await getMember(ctx, args.workspacesId, userId)
+    const member = await getMember(ctx, args.workspaceId, userId)
 
     if (!member) {
       throw new Error('Unauthorized')
@@ -42,11 +42,11 @@ export const create = mutation({
 
     // TODO: Handle conversation id
 
-    const messageId = ctx.db.insert('messages', {
+    const messageId = await ctx.db.insert('messages', {
       memberId: member._id,
       image: args.image,
       body: args.body,
-      workspacesId: args.workspacesId,
+      workspaceId: args.workspaceId,
       channelId: args.channelId,
       parentMessageId: args.parentMessageId,
       updatedAt: Date.now(),
