@@ -85,7 +85,20 @@ export default function Editor({
             enter: {
               key: 'Enter',
               handler: () => {
-                // TODO: Send data form
+                const text = quill.getText()
+                const addedImage = imageElementRef?.current?.files?.[0] ?? null
+
+                const isEmpty =
+                  !addedImage ||
+                  text.replace(/<(.|\n)*?>/g, '').trim().length === 0
+
+                if (isEmpty) return
+
+                const body = JSON.stringify(quill.getContents())
+
+                if (submitRef) {
+                  submitRef.current?.({ body, image: addedImage })
+                }
               },
             },
             shift_enter: {
@@ -151,7 +164,7 @@ export default function Editor({
     }
   }
 
-  const isTextEmpty = text.replace(/<(.|\n)*?>/g, '').trim().length === 0
+  const isEmpty = !image && text.replace(/<(.|\n)*?>/g, '').trim().length === 0
 
   function handleSelectImage(uploadedFile: File | null) {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -170,6 +183,8 @@ export default function Editor({
       )
     }
   }
+
+  console.log({ image: !!image })
 
   return (
     <div className="flex flex-col">
@@ -250,13 +265,25 @@ export default function Editor({
                 variant="outline"
                 size="sm"
                 disabled={disabled || !onCancel}
+                onClick={onCancel}
               >
                 Cancel
               </Button>
               <Button
-                className="bg-[#007a5a] text-white hover:bg-[#007a5a]/80"
+                className={cn(
+                  'ml-auto',
+                  isEmpty
+                    ? 'bg-white text-muted-foreground hover:bg-white'
+                    : 'bg-[#007a5a] text-white hover:bg-[#007a5a]/80',
+                )}
                 size="sm"
-                disabled={disabled || isTextEmpty}
+                disabled={disabled || isEmpty}
+                onClick={() => {
+                  onSubmit({
+                    body: JSON.stringify(quillRef.current?.getContents()),
+                    image,
+                  })
+                }}
               >
                 Save
               </Button>
@@ -266,12 +293,18 @@ export default function Editor({
             <Button
               className={cn(
                 'ml-auto',
-                isTextEmpty
+                isEmpty
                   ? 'bg-white text-muted-foreground hover:bg-white'
                   : 'bg-[#007a5a] text-white hover:bg-[#007a5a]/80',
               )}
               size="iconSm"
-              disabled={disabled || isTextEmpty}
+              disabled={disabled || isEmpty}
+              onClick={() => {
+                onSubmit({
+                  body: JSON.stringify(quillRef.current?.getContents()),
+                  image,
+                })
+              }}
             >
               <Send className="size-4" />
             </Button>
@@ -282,7 +315,7 @@ export default function Editor({
         <div
           className={cn(
             'ml-auto p-2 text-[10px] text-muted-foreground opacity-0 transition',
-            isTextEmpty && 'opacity-100',
+            isEmpty && 'opacity-100',
           )}
         >
           <p>
