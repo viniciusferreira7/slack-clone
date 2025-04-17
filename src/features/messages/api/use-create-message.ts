@@ -10,7 +10,6 @@ interface CreateMessageRequest {
   body: string
   image?: Id<'_storage'>
   workspaceId: Id<'workspaces'>
-  memberId: Id<'members'>
   channelId?: Id<'channels'>
   parentMessageId?: Id<'messages'>
   // TODO: Add conversation id here
@@ -23,6 +22,7 @@ interface Options {
   onSuccess?: (data: CreateMessageResponse) => void
   onError?: (err: unknown) => void
   onSettled?: VoidFunction
+  throwError?: boolean
 }
 
 type Status = 'pending' | 'error' | 'success' | 'settled' | null
@@ -57,6 +57,10 @@ export const useCreateMessage = () => {
       } catch (err) {
         setStatus('error')
         options?.onError?.(err)
+
+        if (options?.throwError) {
+          throw err
+        }
         setError(err)
       } finally {
         options?.onSettled?.()

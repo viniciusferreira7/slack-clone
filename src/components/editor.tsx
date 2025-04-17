@@ -89,7 +89,7 @@ export default function Editor({
                 const addedImage = imageElementRef?.current?.files?.[0] ?? null
 
                 const isEmpty =
-                  !addedImage ||
+                  !addedImage &&
                   text.replace(/<(.|\n)*?>/g, '').trim().length === 0
 
                 if (isEmpty) return
@@ -184,8 +184,6 @@ export default function Editor({
     }
   }
 
-  console.log({ image: !!image })
-
   return (
     <div className="flex flex-col">
       <input
@@ -197,7 +195,12 @@ export default function Editor({
         }
         className="hidden"
       />
-      <div className="flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white transition focus-within:border-slate-300 focus-within:shadow-sm">
+      <div
+        className={cn(
+          'flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white transition focus-within:border-slate-300 focus-within:shadow-sm',
+          disabled && 'opacity-50',
+        )}
+      >
         <div ref={containerRef} className="ql-custom h-full" />
         {!!image && (
           <div className="p-2">

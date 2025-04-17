@@ -21,7 +21,6 @@ export const create = mutation({
   args: {
     body: v.string(),
     image: v.optional(v.id('_storage')),
-    memberId: v.id('members'),
     workspaceId: v.id('workspaces'),
     channelId: v.optional(v.id('channels')),
     parentMessageId: v.optional(v.id('messages')),
