@@ -12,7 +12,7 @@ interface CreateMessageRequest {
   workspaceId: Id<'workspaces'>
   channelId?: Id<'channels'>
   parentMessageId?: Id<'messages'>
-  // TODO: Add conversation id here
+  conversationId?: Id<'conversations'>
 }
 interface CreateMessageResponse {
   messageId: Id<'messages'>
