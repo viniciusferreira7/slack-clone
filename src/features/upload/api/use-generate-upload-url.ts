@@ -4,22 +4,11 @@ import { useMutation } from 'convex/react'
 import { useCallback, useMemo, useState } from 'react'
 
 import { api } from '../../../../convex/_generated/api'
-import type { Id } from '../../../../convex/_generated/dataModel'
 
-interface CreateMessageRequest {
-  body: string
-  image?: Id<'_storage'>
-  workspaceId: Id<'workspaces'>
-  channelId?: Id<'channels'>
-  parentMessageId?: Id<'messages'>
-  // TODO: Add conversation id here
-}
-interface CreateMessageResponse {
-  messageId: Id<'messages'>
-}
+type GenerateUploadUrlResponse = string
 
 interface Options {
-  onSuccess?: (data: CreateMessageResponse) => void
+  onSuccess?: (data: GenerateUploadUrlResponse) => void
   onError?: (err: unknown) => void
   onSettled?: VoidFunction
   throwError?: boolean
@@ -27,8 +16,8 @@ interface Options {
 
 type Status = 'pending' | 'error' | 'success' | 'settled' | null
 
-export const useCreateMessage = () => {
-  const [data, setData] = useState<CreateMessageResponse | null>(null)
+export const useGenerateUploadUrl = () => {
+  const [data, setData] = useState<GenerateUploadUrlResponse | null>(null)
   const [error, setError] = useState<null | unknown>()
 
   const [status, setStatus] = useState<Status>(null)
@@ -38,18 +27,18 @@ export const useCreateMessage = () => {
   const isSuccess = useMemo(() => status === 'success', [status])
   const isSettled = useMemo(() => status === 'settled', [status])
 
-  const mutation = useMutation(api.messages.create)
+  const mutation = useMutation(api.upload.generateUploadUrl)
 
   const mutate = useCallback(
-    async (values: CreateMessageRequest, options?: Options) => {
+    async (options?: Options) => {
       try {
         setData(null)
 
         setStatus('pending')
 
-        const response = await mutation(values)
+        const response = await mutation()
 
-        if (response instanceof Error) return
+        if ((response as unknown) instanceof Error) return
 
         options?.onSuccess?.(response)
         setData(response)
@@ -58,7 +47,6 @@ export const useCreateMessage = () => {
         setStatus('error')
         options?.onError?.(err)
         setError(err)
-
         if (options?.throwError) {
           throw err
         }
