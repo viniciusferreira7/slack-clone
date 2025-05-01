@@ -1,6 +1,6 @@
 import { getAuthUserId } from '@convex-dev/auth/server'
 import { paginationOptsValidator } from 'convex/server'
-import { v, v } from 'convex/values'
+import { v } from 'convex/values'
 
 import type { Id } from './_generated/dataModel'
 import { mutation, query, type QueryCtx } from './_generated/server'
