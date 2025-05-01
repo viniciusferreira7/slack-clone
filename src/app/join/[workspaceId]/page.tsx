@@ -43,7 +43,6 @@ export default async function JoinPage({ params }: JoinPageProps) {
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-y-8 rounded-lg bg-white p-8 shadow-sm">
-      {/* TODO: Change icon to image */}
       <Hash className="size-16 shrink-0 text-rose-500" />
       <div className="flex max-w-md flex-col items-center justify-center gap-y-4">
         <div className="flex max-w-md flex-col items-center justify-center gap-y-2">
