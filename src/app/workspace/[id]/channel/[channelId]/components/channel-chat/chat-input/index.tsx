@@ -10,7 +10,7 @@ import { useGenerateUploadUrl } from '@/features/upload/api/use-generate-upload-
 import { useChannelId } from '@/hooks/use-channel-id'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
-import type { Id } from '../../../../../../../../convex/_generated/dataModel'
+import type { Id } from '../../../../../../../../../convex/_generated/dataModel'
 
 const Editor = dynamic(() => import('@/components/editor'), {
   ssr: false,
@@ -22,7 +22,7 @@ interface HandleSubmitParams {
 }
 
 interface ChatInputProps {
-  placeholder: string
+  placeholder?: string
 }
 
 interface CreateMessageValues {
