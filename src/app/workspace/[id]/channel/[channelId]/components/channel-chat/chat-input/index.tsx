@@ -23,6 +23,7 @@ interface HandleSubmitParams {
 
 interface ChatInputProps {
   placeholder?: string
+  disabled?: boolean
 }
 
 interface CreateMessageValues {
@@ -32,7 +33,7 @@ interface CreateMessageValues {
   image?: Id<'_storage'>
 }
 
-export function ChatInput({ placeholder }: ChatInputProps) {
+export function ChatInput({ placeholder, disabled }: ChatInputProps) {
   const editorRef = useRef<Quill | null>(null)
   const [editorKey, setEditorKey] = useState(0)
   const [isPending, setIsPending] = useState(false)
@@ -93,7 +94,7 @@ export function ChatInput({ placeholder }: ChatInputProps) {
         placeholder={placeholder}
         onSubmit={handleSubmit}
         innerRef={editorRef}
-        disabled={isPending}
+        disabled={isPending || disabled}
       />
     </div>
   )
