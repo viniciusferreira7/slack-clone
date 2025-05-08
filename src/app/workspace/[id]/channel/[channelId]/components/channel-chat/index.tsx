@@ -30,15 +30,13 @@ export function ChannelChat({ channel }: ChannelChatProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex-1">
-        <MessageList
-          channel={channel}
-          messages={results}
-          onLoadMore={loadMore}
-          isLoadingMore={status === 'LoadingMore'}
-          canLoadMore={status === 'CanLoadMore'}
-        />
-      </div>
+      <MessageList
+        channel={channel}
+        messages={results}
+        onLoadMore={loadMore}
+        isLoadingMore={status === 'LoadingMore'}
+        canLoadMore={status === 'CanLoadMore'}
+      />
       <ChatInput />
     </div>
   )
