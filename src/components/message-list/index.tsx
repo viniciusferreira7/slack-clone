@@ -3,6 +3,8 @@
 import dayjs from 'dayjs'
 
 import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-message'
+import { isToday } from '@/utils/date/is-today'
+import { isYesterday } from '@/utils/date/is-yesterday'
 
 import type { Doc } from '../../../convex/_generated/dataModel'
 import { Message } from './message'
@@ -41,14 +43,6 @@ export function MessageList({
     },
     {} as Record<string, typeof messages>,
   )
-
-  function isToday(date: Date | string) {
-    return dayjs(date).isSame(dayjs(), 'day')
-  }
-
-  function isYesterday(date: Date | string) {
-    return dayjs(date).isSame(dayjs().subtract(1, 'day'), 'day')
-  }
 
   function formatDateLabel(dateStr: string) {
     const date = dayjs(dateStr)

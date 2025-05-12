@@ -42,5 +42,9 @@ export default function Renderer({ value }: RendererProps) {
 
   if (isEmpty) return
 
-  return <div ref={rendererRef}>{value}</div>
+  return (
+    <div ref={rendererRef} className="ql-editor ql-renderer">
+      {value}
+    </div>
+  )
 }

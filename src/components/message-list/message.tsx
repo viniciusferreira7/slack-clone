@@ -1,8 +1,12 @@
+import dayjs from 'dayjs'
 import dynamic from 'next/dynamic'
 
 import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-message'
+import { isToday } from '@/utils/date/is-today'
+import { isYesterday } from '@/utils/date/is-yesterday'
 
 import type { Id } from '../../../convex/_generated/dataModel'
+import { Hint } from '../hint'
 
 const Renderer = dynamic(() => import('./renderer'), { ssr: false })
 
@@ -15,8 +19,26 @@ type MessageProps = UseGetMessagesReturnType[number] & {
 }
 
 export function Message(props: MessageProps) {
+  function formatFullTime(date: Date) {
+    const formattedDate = dayjs(date).format('MMM d, YYYY [ at ] hh:mm:ss A')
+
+    if (isToday(date)) return `Today ${dayjs(date).format('[ at ] hh:mm:ss A')}`
+
+    if (isYesterday(date))
+      return `Yesterday ${dayjs(date).format('[ at ] hh:mm:ss A')}`
+
+    return formattedDate
+  }
+
   return (
-    <div>
+    <div className="group relative flex flex-col gap-2 px-5 hover:bg-gray-100/60">
+      <div className="flex items-start gap-2">
+        <Hint label={formatFullTime(new Date(props._creationTime))}>
+          <button className="w-[40px] text-center text-xs leading-[22px] text-muted-foreground opacity-0 hover:underline group-hover:opacity-100">
+            {dayjs(new Date(props._creationTime)).format('HH:mm')}
+          </button>
+        </Hint>
+      </div>
       <Renderer value={props.body} />
     </div>
   )
