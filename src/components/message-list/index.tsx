@@ -2,7 +2,9 @@
 
 import dayjs from 'dayjs'
 
+import { useCurrentMember } from '@/features/members/api/use-current-member'
 import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-message'
+import { useWorkspaceId } from '@/hooks/use-workspace-id'
 import { isToday } from '@/utils/date/is-today'
 import { isYesterday } from '@/utils/date/is-yesterday'
 
@@ -17,6 +19,8 @@ interface MessageListProps {
   canLoadMore: boolean
   variant?: 'channel' | 'thread' | 'conversation'
 }
+
+const TIME_THRESHOLD = 5
 
 export function MessageList({
   channel,
@@ -53,6 +57,12 @@ export function MessageList({
     return date.format('ddd, MMMM d')
   }
 
+  const workspaceId = useWorkspaceId()
+
+  const { data: member } = useCurrentMember({
+    workspaceId,
+  })
+
   return (
     <div className="messages-scrollbar flex flex-1 flex-col-reverse overflow-y-auto pb-4">
       {groupedMessages &&
@@ -65,21 +75,36 @@ export function MessageList({
                   {formatDateLabel(dateKey)}
                 </span>
               </div>
-              {messages?.map((message) => {
-                if (!message?.member || !message?.user) return null
+              <div className="flex flex-col gap-3">
+                {messages?.map((message, index, originalMessages) => {
+                  if (!message?.member || !message?.user) return null
 
-                return (
-                  <Message
-                    key={message?._id}
-                    {...message}
-                    isEditing={false}
-                    onEditingId={() => {}}
-                    isCompact={false}
-                    hideThreadButton={false}
-                    isAuthor={false}
-                  />
-                )
-              })}
+                  const prevMessage = originalMessages[index - 1]
+
+                  const diffInMinutes = prevMessage
+                    ? dayjs(new Date(message._creationTime)).diff(
+                        new Date(prevMessage._creationTime),
+                        'minutes',
+                      )
+                    : 6
+
+                  const isCompact =
+                    !!prevMessage &&
+                    prevMessage.user._id === message.user._id &&
+                    diffInMinutes < TIME_THRESHOLD
+                  return (
+                    <Message
+                      key={message?._id}
+                      {...message}
+                      isEditing={false}
+                      onEditingId={() => {}}
+                      isCompact={isCompact}
+                      hideThreadButton={false}
+                      isAuthor={message.memberId === member?._id}
+                    />
+                  )
+                })}
+              </div>
             </div>
           )
         })}
