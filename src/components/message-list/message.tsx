@@ -8,6 +8,7 @@ import { isYesterday } from '@/utils/date/is-yesterday'
 import type { Id } from '../../../convex/_generated/dataModel'
 import { Hint } from '../hint'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { Thumbnail } from './thumbnail'
 
 const Renderer = dynamic(() => import('./renderer'), { ssr: false })
 
@@ -42,6 +43,7 @@ export function Message(props: MessageProps) {
           </Hint>
           <div className="flex w-full flex-col">
             <Renderer value={props.body} />
+            <Thumbnail url={props.image} />
             {props.updatedAt && (
               <span className="text-xs text-muted-foreground">(Edited)</span>
             )}
@@ -77,6 +79,7 @@ export function Message(props: MessageProps) {
             </Hint>
           </div>
           <Renderer value={props.body} />
+          <Thumbnail url={props.image} />
           {props.updatedAt && (
             <span className="text-xs text-muted-foreground">(Edited)</span>
           )}
