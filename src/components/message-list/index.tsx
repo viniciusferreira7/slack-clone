@@ -9,10 +9,11 @@ import { isToday } from '@/utils/date/is-today'
 import { isYesterday } from '@/utils/date/is-yesterday'
 
 import type { Doc } from '../../../convex/_generated/dataModel'
+import { ChannelHero } from './channel-hero'
 import { Message } from './message'
 
 interface MessageListProps {
-  channel: Doc<'channels'>
+  channel?: Doc<'channels'>
   messages: UseGetMessagesReturnType | undefined
   onLoadMore: () => void
   isLoadingMore: boolean
@@ -99,7 +100,7 @@ export function MessageList({
                       isEditing={false}
                       onEditingId={() => {}}
                       isCompact={isCompact}
-                      hideThreadButton={false}
+                      hideThreadButton={variant === 'thread'}
                       isAuthor={message.memberId === member?._id}
                     />
                   )
@@ -108,6 +109,7 @@ export function MessageList({
             </div>
           )
         })}
+      {variant === 'channel' && channel?._id && <ChannelHero {...channel} />}
     </div>
   )
 }
