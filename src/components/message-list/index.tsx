@@ -1,6 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
+import { useState } from 'react'
 
 import { useCurrentMember } from '@/features/members/api/use-current-member'
 import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-message'
@@ -8,7 +9,7 @@ import { useWorkspaceId } from '@/hooks/use-workspace-id'
 import { isToday } from '@/utils/date/is-today'
 import { isYesterday } from '@/utils/date/is-yesterday'
 
-import type { Doc } from '../../../convex/_generated/dataModel'
+import type { Doc, Id } from '../../../convex/_generated/dataModel'
 import { ChannelHero } from './channel-hero'
 import { Message } from './message'
 
@@ -31,6 +32,8 @@ export function MessageList({
   canLoadMore,
   variant = 'channel',
 }: MessageListProps) {
+  const [editingId, setEditingId] = useState<Id<'messages'> | null>(null)
+
   const groupedMessages = messages?.reduce(
     (groups, message) => {
       if (!message) return groups
@@ -60,7 +63,7 @@ export function MessageList({
 
   const workspaceId = useWorkspaceId()
 
-  const { data: member } = useCurrentMember({
+  const { data: currentMember } = useCurrentMember({
     workspaceId,
   })
 
@@ -97,11 +100,11 @@ export function MessageList({
                     <Message
                       key={message?._id}
                       {...message}
-                      isEditing={false}
-                      onEditingId={() => {}}
+                      isEditing={editingId === message._id}
+                      onEditingId={setEditingId}
                       isCompact={isCompact}
                       hideThreadButton={variant === 'thread'}
-                      isAuthor={message.memberId === member?._id}
+                      isAuthor={message.memberId === currentMember?._id}
                     />
                   )
                 })}
