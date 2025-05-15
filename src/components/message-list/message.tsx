@@ -8,6 +8,7 @@ import { isYesterday } from '@/utils/date/is-yesterday'
 import type { Id } from '../../../convex/_generated/dataModel'
 import { Hint } from '../hint'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { MessageToolbar } from './message-toolbar'
 import { Thumbnail } from './thumbnail'
 
 const Renderer = dynamic(() => import('./renderer'), { ssr: false })
@@ -85,6 +86,17 @@ export function Message(props: MessageProps) {
           )}
         </div>
       </div>
+      {!props.isEditing && (
+        <MessageToolbar
+          isAuthor={props.isAuthor}
+          isPending={false}
+          onEdit={() => props.onEditingId(props._id)}
+          onThread={() => {}}
+          onDelete={() => {}}
+          onReaction={() => {}}
+          hideThreadButton={props.hideThreadButton}
+        />
+      )}
     </div>
   )
 }
