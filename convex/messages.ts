@@ -68,6 +68,36 @@ const getMember = async (
     )
     .unique()
 }
+
+export const remove = mutation({
+  args: {
+    id: v.id('messages'),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+
+    if (!userId) {
+      throw new Error('Unauthorized')
+    }
+
+    const message = await ctx.db.get(args.id)
+
+    if (!message) {
+      throw new Error('Message not found')
+    }
+
+    const member = await getMember(ctx, message.workspaceId, userId)
+
+    if (!member || member?._id !== message.memberId) {
+      throw new Error('Unauthorized')
+    }
+
+    await ctx.db.delete(message._id)
+
+    return { messageId: args.id }
+  },
+})
+
 export const update = mutation({
   args: {
     id: v.id('messages'),
