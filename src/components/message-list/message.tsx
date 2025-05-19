@@ -2,8 +2,10 @@ import dayjs from 'dayjs'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 
+import { useDeleteMessage } from '@/features/messages/api/use-delete-message'
 import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-message'
 import { useUpdateMessage } from '@/features/messages/api/use-update-message'
+import { useConfirm } from '@/hooks/use-confirm'
 import { cn } from '@/lib/utils'
 import { isToday } from '@/utils/date/is-today'
 import { isYesterday } from '@/utils/date/is-yesterday'
@@ -29,6 +31,13 @@ export function Message(props: MessageProps) {
   const { mutate: updateMessage, isPending: isUpdatingMessage } =
     useUpdateMessage()
 
+  const [ConfirmDialog, confim] = useConfirm({
+    title: 'Delete message',
+    message: 'Are you sure want to delete this message? This cannot be undone',
+  })
+  const { mutate: deleteMessage, isPending: isDeletingMessage } =
+    useDeleteMessage()
+
   function formatFullTime(date: Date) {
     const formattedDate = dayjs(date).format('MMM d, YYYY [ at ] hh:mm:ss A')
 
@@ -40,9 +49,13 @@ export function Message(props: MessageProps) {
     return formattedDate
   }
 
-  const isPending = isUpdatingMessage
+  const isPending = isUpdatingMessage || isDeletingMessage
 
   async function handleUpdateMessage({ body }: { body: string }) {
+    const ok = await confim()
+
+    if (!ok) return
+
     await updateMessage(
       {
         id: props._id,
@@ -60,20 +73,99 @@ export function Message(props: MessageProps) {
     )
   }
 
+  async function handleDeleteMessage() {
+    await deleteMessage(
+      {
+        id: props._id,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Message was deleted')
+
+          // TODO: Close thread if it was open
+        },
+        onError: () => {
+          toast.error('Failed to delete message')
+        },
+      },
+    )
+  }
+
   if (props.isCompact) {
     return (
+      <>
+        <div
+          className={cn(
+            'group relative flex flex-col gap-2 px-5 hover:bg-gray-100/60',
+            props.isEditing && 'bg-slack-yellow-100 hover:bg-slack-yellow-100',
+          )}
+        >
+          <div className="flex items-start gap-2">
+            <Hint label={formatFullTime(new Date(props._creationTime))}>
+              <button className="w-[40px] text-center text-xs leading-[22px] text-muted-foreground opacity-0 hover:underline group-hover:opacity-100">
+                {dayjs(new Date(props._creationTime)).format('HH:mm')}
+              </button>
+            </Hint>
+            {props.isEditing ? (
+              <div className="h-full w-full">
+                <Editor
+                  variant="update"
+                  onSubmit={handleUpdateMessage}
+                  disabled={isPending}
+                  defaultValue={JSON.parse(props.body)}
+                  onCancel={() => props.onEditingId(null)}
+                />
+              </div>
+            ) : (
+              <div className="flex w-full flex-col">
+                <Renderer value={props.body} />
+                <Thumbnail url={props.image} />
+                {props.updatedAt && (
+                  <span className="text-xs text-muted-foreground">
+                    (Edited)
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+          {!props.isEditing && (
+            <MessageToolbar
+              isAuthor={props.isAuthor}
+              isPending={isPending}
+              onEdit={() => props.onEditingId(props._id)}
+              onThread={() => {}}
+              onDelete={handleDeleteMessage}
+              onReaction={() => {}}
+              hideThreadButton={props.hideThreadButton}
+            />
+          )}
+        </div>
+        <ConfirmDialog />
+      </>
+    )
+  }
+
+  const avatarFallback = (props.user.name ?? 'Member').charAt(0).toUpperCase()
+
+  return (
+    <>
       <div
         className={cn(
           'group relative flex flex-col gap-2 px-5 hover:bg-gray-100/60',
           props.isEditing && 'bg-slack-yellow-100 hover:bg-slack-yellow-100',
+          isDeletingMessage &&
+            'origin-bottom scale-y-0 transform bg-rose-500/50 transition-all duration-200',
         )}
       >
         <div className="flex items-start gap-2">
-          <Hint label={formatFullTime(new Date(props._creationTime))}>
-            <button className="w-[40px] text-center text-xs leading-[22px] text-muted-foreground opacity-0 hover:underline group-hover:opacity-100">
-              {dayjs(new Date(props._creationTime)).format('HH:mm')}
-            </button>
-          </Hint>
+          <button>
+            <Avatar>
+              <AvatarFallback className="rounded-md bg-sky-500 text-white">
+                {avatarFallback}
+              </AvatarFallback>
+              <AvatarImage src={props.user.image} />
+            </Avatar>
+          </button>
           {props.isEditing ? (
             <div className="h-full w-full">
               <Editor
@@ -85,7 +177,18 @@ export function Message(props: MessageProps) {
               />
             </div>
           ) : (
-            <div className="flex w-full flex-col">
+            <div className="flex w-full flex-col overflow-hidden">
+              <div className="text-sm">
+                <button className="font-bold text-primary">
+                  {props.user.name}
+                </button>
+                <span>&nbsp;&nbsp;</span>
+                <Hint label={formatFullTime(new Date(props._creationTime))}>
+                  <button className="text-sm text-muted-foreground hover:underline">
+                    {dayjs(new Date(props._creationTime)).format('hh:mm A')}
+                  </button>
+                </Hint>
+              </div>
               <Renderer value={props.body} />
               <Thumbnail url={props.image} />
               {props.updatedAt && (
@@ -100,75 +203,13 @@ export function Message(props: MessageProps) {
             isPending={isPending}
             onEdit={() => props.onEditingId(props._id)}
             onThread={() => {}}
-            onDelete={() => {}}
+            onDelete={handleDeleteMessage}
             onReaction={() => {}}
             hideThreadButton={props.hideThreadButton}
           />
         )}
       </div>
-    )
-  }
-
-  const avatarFallback = (props.user.name ?? 'Member').charAt(0).toUpperCase()
-
-  return (
-    <div
-      className={cn(
-        'group relative flex flex-col gap-2 px-5 hover:bg-gray-100/60',
-        props.isEditing && 'bg-slack-yellow-100 hover:bg-slack-yellow-100',
-      )}
-    >
-      <div className="flex items-start gap-2">
-        <button>
-          <Avatar>
-            <AvatarFallback className="rounded-md bg-sky-500 text-white">
-              {avatarFallback}
-            </AvatarFallback>
-            <AvatarImage src={props.user.image} />
-          </Avatar>
-        </button>
-        {props.isEditing ? (
-          <div className="h-full w-full">
-            <Editor
-              variant="update"
-              onSubmit={handleUpdateMessage}
-              disabled={isPending}
-              defaultValue={JSON.parse(props.body)}
-              onCancel={() => props.onEditingId(null)}
-            />
-          </div>
-        ) : (
-          <div className="flex w-full flex-col overflow-hidden">
-            <div className="text-sm">
-              <button className="font-bold text-primary">
-                {props.user.name}
-              </button>
-              <span>&nbsp;&nbsp;</span>
-              <Hint label={formatFullTime(new Date(props._creationTime))}>
-                <button className="text-sm text-muted-foreground hover:underline">
-                  {dayjs(new Date(props._creationTime)).format('hh:mm A')}
-                </button>
-              </Hint>
-            </div>
-            <Renderer value={props.body} />
-            <Thumbnail url={props.image} />
-            {props.updatedAt && (
-              <span className="text-xs text-muted-foreground">(Edited)</span>
-            )}
-          </div>
-        )}
-      </div>
-      {!props.isEditing && (
-        <MessageToolbar
-          isAuthor={props.isAuthor}
-          isPending={isPending}
-          onEdit={() => props.onEditingId(props._id)}
-          onThread={() => {}}
-          onDelete={() => {}}
-          onReaction={() => {}}
-          hideThreadButton={props.hideThreadButton}
-        />
-      )}
-    </div>
+      <ConfirmDialog />
+    </>
   )
 }
