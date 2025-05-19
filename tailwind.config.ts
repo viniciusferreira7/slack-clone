@@ -25,6 +25,9 @@ export default {
           blue: {
             200: '#1264a3',
           },
+          yellow: {
+            100: '#f2c74433',
+          },
         },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
