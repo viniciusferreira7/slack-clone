@@ -55,7 +55,7 @@ export const toggle = mutation({
     if (existingMessageReactionsFromUser) {
       await ctx.db.delete(existingMessageReactionsFromUser._id)
 
-      return { reaction: existingMessageReactionsFromUser }
+      return { reaction: existingMessageReactionsFromUser._id }
     } else {
       const newReaction = await ctx.db.insert('reactions', {
         value: args.value,
