@@ -1,6 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
+import { Loader } from 'lucide-react'
 import { useState } from 'react'
 
 import { useCurrentMember } from '@/features/members/api/use-current-member'
@@ -112,6 +113,33 @@ export function MessageList({
             </div>
           )
         })}
+      <div
+        ref={(el) => {
+          if (el) {
+            const observer = new IntersectionObserver(
+              ([entry]) => {
+                if (entry.isIntersecting && canLoadMore) {
+                  onLoadMore()
+                }
+              },
+              { threshold: 1.0 },
+            )
+
+            observer.observe(el)
+
+            return () => observer.disconnect()
+          }
+        }}
+        className="h-1"
+      />
+      {isLoadingMore && (
+        <div className="relative my-2 text-center">
+          <hr className="absolute left-0 right-0 top-1/2 border-t border-gray-300" />
+          <span className="relative inline-block rounded-full border border-gray-300 bg-white px-4 py-1 text-xs shadow-sm">
+            <Loader className="size-4 animate-spin" />
+          </span>
+        </div>
+      )}
       {variant === 'channel' && channel?._id && <ChannelHero {...channel} />}
     </div>
   )

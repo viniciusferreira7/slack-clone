@@ -17,7 +17,7 @@ export function ChannelChat({ channel }: ChannelChatProps) {
     channelId: channel._id,
   })
 
-  if (isLoading || status === 'LoadingFirstPage') {
+  if (isLoading && status === 'LoadingFirstPage') {
     return (
       <div className="flex h-full flex-col">
         <div className="grid h-full place-items-center">
