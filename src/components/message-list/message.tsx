@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useDeleteMessage } from '@/features/messages/api/use-delete-message'
 import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-message'
 import { useUpdateMessage } from '@/features/messages/api/use-update-message'
+import { useToggleReaction } from '@/features/reactions/api/use-toggle-reaction'
 import { useConfirm } from '@/hooks/use-confirm'
 import { cn } from '@/lib/utils'
 import { isToday } from '@/utils/date/is-today'
@@ -14,6 +15,7 @@ import type { Id } from '../../../convex/_generated/dataModel'
 import { Hint } from '../hint'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { MessageToolbar } from './message-toolbar'
+import { Reactions } from './reactions'
 import { Thumbnail } from './thumbnail'
 
 const Renderer = dynamic(() => import('./renderer'), { ssr: false })
@@ -38,6 +40,9 @@ export function Message(props: MessageProps) {
   const { mutate: deleteMessage, isPending: isDeletingMessage } =
     useDeleteMessage()
 
+  const { mutate: toggleReaction, isPending: isTogglingReaction } =
+    useToggleReaction()
+
   function formatFullTime(date: Date) {
     const formattedDate = dayjs(date).format('MMM d, YYYY [ at ] hh:mm:ss A')
 
@@ -49,7 +54,7 @@ export function Message(props: MessageProps) {
     return formattedDate
   }
 
-  const isPending = isUpdatingMessage || isDeletingMessage
+  const isPending = isUpdatingMessage || isDeletingMessage || isTogglingReaction
 
   async function handleUpdateMessage({ body }: { body: string }) {
     const ok = await confim()
@@ -91,6 +96,21 @@ export function Message(props: MessageProps) {
     )
   }
 
+  async function handleToggleReaction(value: string) {
+    console.log({ value })
+    await toggleReaction(
+      {
+        messageId: props._id,
+        value,
+      },
+      {
+        onError: () => {
+          toast.error('Failed to toggle reaction')
+        },
+      },
+    )
+  }
+
   if (props.isCompact) {
     return (
       <>
@@ -125,6 +145,10 @@ export function Message(props: MessageProps) {
                     (Edited)
                   </span>
                 )}
+                <Reactions
+                  reactions={props.reactions}
+                  onReactionChange={handleToggleReaction}
+                />
               </div>
             )}
           </div>
@@ -135,7 +159,7 @@ export function Message(props: MessageProps) {
               onEdit={() => props.onEditingId(props._id)}
               onThread={() => {}}
               onDelete={handleDeleteMessage}
-              onReaction={() => {}}
+              onReaction={handleToggleReaction}
               hideThreadButton={props.hideThreadButton}
             />
           )}
@@ -194,6 +218,10 @@ export function Message(props: MessageProps) {
               {props.updatedAt && (
                 <span className="text-xs text-muted-foreground">(Edited)</span>
               )}
+              <Reactions
+                reactions={props.reactions}
+                onReactionChange={handleToggleReaction}
+              />
             </div>
           )}
         </div>
@@ -204,7 +232,7 @@ export function Message(props: MessageProps) {
             onEdit={() => props.onEditingId(props._id)}
             onThread={() => {}}
             onDelete={handleDeleteMessage}
-            onReaction={() => {}}
+            onReaction={handleToggleReaction}
             hideThreadButton={props.hideThreadButton}
           />
         )}

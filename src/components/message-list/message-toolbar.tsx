@@ -10,7 +10,7 @@ interface MessageToolbarProps {
   onEdit: () => void
   onThread: () => void
   onDelete: () => void
-  onReaction: (emoji: any) => void //eslint-disable-line
+  onReaction: (emoji: string) => void //eslint-disable-line
   hideThreadButton: boolean
 }
 
