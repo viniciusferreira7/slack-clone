@@ -29,7 +29,7 @@ export function ChannelChat({ channel }: ChannelChatProps) {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col overflow-y-auto">
       <MessageList
         channel={channel}
         messages={results}

@@ -70,7 +70,7 @@ export function Header({ channel }: HeaderProps) {
   return (
     <>
       <DialogConfirm />
-      <header className="flex h-[49px] items-center overflow-hidden border-b bg-white px-4">
+      <header className="bg-whit flex min-h-[49px] w-full items-center overflow-hidden border-b bg-white px-4">
         <Dialog>
           <DialogTrigger asChild>
             <Button

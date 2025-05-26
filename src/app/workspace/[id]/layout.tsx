@@ -12,6 +12,7 @@ import {
 
 import { api } from '../../../../convex/_generated/api'
 import type { Doc, Id } from '../../../../convex/_generated/dataModel'
+import { Thread } from '../../../features/messages/components/thread'
 import { Sidebar } from './components/sidebar'
 import { Toolbar } from './components/toolbar'
 import { WorkspaceSidebar } from './components/workspace-sidebar'
@@ -96,6 +97,7 @@ export default async function WorkspaceIdLayout({
             <ResizablePanel defaultSize={90} minSize={20}>
               {children}
             </ResizablePanel>
+            <Thread />
           </ResizablePanelGroup>
         </div>
       </div>

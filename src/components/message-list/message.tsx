@@ -1,3 +1,5 @@
+'use client'
+
 import dayjs from 'dayjs'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
@@ -7,6 +9,7 @@ import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-m
 import { useUpdateMessage } from '@/features/messages/api/use-update-message'
 import { useToggleReaction } from '@/features/reactions/api/use-toggle-reaction'
 import { useConfirm } from '@/hooks/use-confirm'
+import { usePanel } from '@/hooks/use-panel'
 import { cn } from '@/lib/utils'
 import { isToday } from '@/utils/date/is-today'
 import { isYesterday } from '@/utils/date/is-yesterday'
@@ -30,6 +33,8 @@ type MessageProps = UseGetMessagesReturnType[number] & {
 }
 
 export function Message(props: MessageProps) {
+  const { parentMessageId, onOpenChange, onClose } = usePanel()
+
   const { mutate: updateMessage, isPending: isUpdatingMessage } =
     useUpdateMessage()
 
@@ -87,7 +92,9 @@ export function Message(props: MessageProps) {
         onSuccess: () => {
           toast.success('Message was deleted')
 
-          // TODO: Close thread if it was open
+          if (parentMessageId === props._id) {
+            onClose()
+          }
         },
         onError: () => {
           toast.error('Failed to delete message')
@@ -97,7 +104,6 @@ export function Message(props: MessageProps) {
   }
 
   async function handleToggleReaction(value: string) {
-    console.log({ value })
     await toggleReaction(
       {
         messageId: props._id,
@@ -157,7 +163,7 @@ export function Message(props: MessageProps) {
               isAuthor={props.isAuthor}
               isPending={isPending}
               onEdit={() => props.onEditingId(props._id)}
-              onThread={() => {}}
+              onThread={() => onOpenChange(props._id)}
               onDelete={handleDeleteMessage}
               onReaction={handleToggleReaction}
               hideThreadButton={props.hideThreadButton}
@@ -230,7 +236,7 @@ export function Message(props: MessageProps) {
             isAuthor={props.isAuthor}
             isPending={isPending}
             onEdit={() => props.onEditingId(props._id)}
-            onThread={() => {}}
+            onThread={() => onOpenChange(props._id)}
             onDelete={handleDeleteMessage}
             onReaction={handleToggleReaction}
             hideThreadButton={props.hideThreadButton}
