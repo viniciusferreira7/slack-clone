@@ -5,7 +5,7 @@ import { Loader } from 'lucide-react'
 import { useState } from 'react'
 
 import { useCurrentMember } from '@/features/members/api/use-current-member'
-import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-message'
+import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-messages'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 import { isToday } from '@/utils/date/is-today'
 import { isYesterday } from '@/utils/date/is-yesterday'

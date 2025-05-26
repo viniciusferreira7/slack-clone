@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 
 import { useDeleteMessage } from '@/features/messages/api/use-delete-message'
-import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-message'
+import type { UseGetMessagesReturnType } from '@/features/messages/api/use-get-messages'
 import { useUpdateMessage } from '@/features/messages/api/use-update-message'
 import { useToggleReaction } from '@/features/reactions/api/use-toggle-reaction'
 import { useConfirm } from '@/hooks/use-confirm'

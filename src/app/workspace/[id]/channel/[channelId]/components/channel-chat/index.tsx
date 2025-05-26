@@ -3,7 +3,7 @@
 import { Loader } from 'lucide-react'
 
 import { MessageList } from '@/components/message-list'
-import { useGetMessages } from '@/features/messages/api/use-get-message'
+import { useGetMessages } from '@/features/messages/api/use-get-messages'
 
 import type { Doc } from '../../../../../../../../convex/_generated/dataModel'
 import { ChatInput } from './chat-input'
