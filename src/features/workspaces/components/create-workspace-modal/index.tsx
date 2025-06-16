@@ -15,9 +15,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
 import { useCreateWorkspace } from '../../api/use-create-workspace'
+import { useGetWorkspaces } from '../../api/use-get-workspaces'
 import { useCreateWorkspaceModal } from '../../store/use-create-workspace-modal'
 import {
   createWorkspaceFormSchema,
@@ -49,6 +59,9 @@ export function CreateWorkspaceModal({
   })
 
   const { mutate, isPending } = useCreateWorkspace()
+
+  const { data: workspaces, isLoading: isWorkspacesLoading } =
+    useGetWorkspaces()
 
   useEffect(() => {
     if (openModal) {
@@ -95,6 +108,33 @@ export function CreateWorkspaceModal({
             account and remove your data from our servers.
           </DialogDescription>
         </DialogHeader>
+        {!isWorkspacesLoading && workspaces?.length !== 0 && (
+          <div className="w-full">
+            <Select
+              disabled={isWorkspacesLoading || isPending}
+              onValueChange={(value) => {
+                router.push(`/workspace/${value}`)
+                setOpen(false)
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a workspaces" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Workspaces</SelectLabel>
+                  {workspaces?.map((workspace) => {
+                    return (
+                      <SelectItem key={workspace._id} value={workspace._id}>
+                        {workspace.name}
+                      </SelectItem>
+                    )
+                  })}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         <form
           className="space-y-4"
           onSubmit={handleSubmit(handleCreateWorkspace)}

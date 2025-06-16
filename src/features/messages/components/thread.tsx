@@ -6,12 +6,19 @@ import { Button } from '@/components/ui/button'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { usePanel } from '@/hooks/use-panel'
 
+import type { Id } from '../../../../convex/_generated/dataModel'
+import { useGetMessage } from '../api/use-get-message'
+
 export function Thread() {
   const { parentMessageId, onClose } = usePanel()
 
-  const showPanel = !!parentMessageId
+  const { data: messages, isLoading } = useGetMessage({
+    messageId: parentMessageId as Id<'messages'>, // FIXME: this value cannot be null
+  })
 
-  if (!showPanel) {
+  const showPanel = !!parentMessageId || isLoading
+
+  if (!parentMessageId) {
     return null
   }
 
@@ -19,7 +26,7 @@ export function Thread() {
     <>
       <ResizableHandle withHandle />
       <ResizablePanel minSize={20} defaultSize={20}>
-        {parentMessageId ? (
+        {showPanel ? (
           <div className="flex h-full flex-col">
             <div className="flex min-h-[49px] items-center justify-between border-b px-4">
               <p className="text-lg font-bold">Thread</p>
