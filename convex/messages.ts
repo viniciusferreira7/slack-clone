@@ -150,7 +150,7 @@ export const getById = query({
 
     const currentMember = await getMember(ctx, message.workspaceId, userId)
 
-    if (currentMember) {
+    if (!currentMember) {
       return null
     }
 

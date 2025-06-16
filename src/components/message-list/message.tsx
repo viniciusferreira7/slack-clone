@@ -62,10 +62,6 @@ export function Message(props: MessageProps) {
   const isPending = isUpdatingMessage || isDeletingMessage || isTogglingReaction
 
   async function handleUpdateMessage({ body }: { body: string }) {
-    const ok = await confim()
-
-    if (!ok) return
-
     await updateMessage(
       {
         id: props._id,
@@ -84,6 +80,10 @@ export function Message(props: MessageProps) {
   }
 
   async function handleDeleteMessage() {
+    const ok = await confim()
+
+    if (!ok) return
+
     await deleteMessage(
       {
         id: props._id,
