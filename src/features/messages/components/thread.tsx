@@ -1,6 +1,7 @@
 'use client'
 
 import { AlertTriangle, Loader, XIcon } from 'lucide-react'
+import { useState } from 'react'
 
 import { Message } from '@/components/message-list/message'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ import type { Id } from '../../../../convex/_generated/dataModel'
 import { useGetMessage } from '../api/use-get-message'
 
 export function Thread() {
+  const [editingId, setEditingId] = useState<Id<'messages'> | null>(null)
   const { parentMessageId, onClose } = usePanel()
 
   const { data: message, isLoading: isMessageLoading } = useGetMessage({
@@ -63,11 +65,11 @@ export function Thread() {
               {...message}
               hideThreadButton
               memberId={message.memberId}
-              isEditing={false}
+              isEditing={editingId === message._id}
               isCompact={false}
-              isAuthor={currentMember?._id === message.memberId}
+              isAuthor={message.memberId === currentMember?._id}
               reactions={message.reactions}
-              onEditingId={() => {}}
+              onEditingId={setEditingId}
               threadCount={0}
               threadImage={undefined}
               threadTimestamp={0}
