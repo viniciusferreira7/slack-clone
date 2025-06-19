@@ -1,5 +1,6 @@
 'use client'
 
+import dayjs from 'dayjs'
 import { AlertTriangle, Loader, XIcon } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import type Quill from 'quill'
@@ -14,10 +15,13 @@ import { useGenerateUploadUrl } from '@/features/upload/api/use-generate-upload-
 import { useChannelId } from '@/hooks/use-channel-id'
 import { usePanel } from '@/hooks/use-panel'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
+import { isToday } from '@/utils/date/is-today'
+import { isYesterday } from '@/utils/date/is-yesterday'
 
 import type { Id } from '../../../../convex/_generated/dataModel'
 import { useCreateMessage } from '../api/use-create-message'
 import { useGetMessage } from '../api/use-get-message'
+import { useGetMessages } from '../api/use-get-messages'
 
 const Editor = dynamic(() => import('@/components/editor'), {
   ssr: false,
@@ -35,6 +39,8 @@ interface CreateMessageValues {
   body: string
   image?: Id<'_storage'>
 }
+
+const TIME_THRESHOLD = 5
 
 export function Thread() {
   const [editingId, setEditingId] = useState<Id<'messages'> | null>(null)
@@ -61,8 +67,25 @@ export function Thread() {
       workspaceId,
     })
 
+  const {
+    results: messages,
+    isLoading: isMessagesLoading,
+    status,
+    loadMore,
+  } = useGetMessages({
+    channelId,
+    parentMessageId: (parentMessageId as Id<'messages'>) ?? undefined,
+  })
+
+  const canLoadMore = status === 'CanLoadMore'
+  const isLoadingMore = status === 'LoadingMore'
+
   const showPanel =
-    !!parentMessageId || isMessageLoading || isCurrentMemberLoading
+    !!parentMessageId ||
+    isMessageLoading ||
+    isCurrentMemberLoading ||
+    isMessagesLoading ||
+    status === 'LoadingFirstPage'
 
   if (!parentMessageId) {
     return null
@@ -115,6 +138,33 @@ export function Thread() {
     }
   }
 
+  function formatDateLabel(dateStr: string) {
+    const date = dayjs(dateStr)
+
+    if (isToday(dateStr)) return 'Today'
+    if (isYesterday(dateStr)) return 'Yesterday'
+
+    return date.format('ddd, MMMM d')
+  }
+
+  const groupedMessages = messages?.reduce(
+    (groups, message) => {
+      if (!message) return groups
+
+      const date = new Date(message?._creationTime)
+      const dateKey = dayjs(date).format('YYYY-MM-DD')
+
+      if (!groups[dateKey]) {
+        groups[dateKey] = []
+      }
+
+      groups[dateKey].unshift(message)
+
+      return groups
+    },
+    {} as Record<string, typeof messages>,
+  )
+
   return (
     <>
       <ResizableHandle withHandle />
@@ -141,7 +191,77 @@ export function Thread() {
                 <XIcon className="size-5 stroke-[1.5]" />
               </Button>
             </div>
-            <div>
+            <div className="messages-scrollbar flex flex-1 flex-col-reverse overflow-y-auto pb-4">
+              {groupedMessages &&
+                Object.entries(groupedMessages).map(([dateKey, messages]) => {
+                  return (
+                    <div key={dateKey}>
+                      <div className="relative my-2 text-center">
+                        <hr className="absolute left-0 right-0 top-1/2 border-t border-gray-300" />
+                        <span className="relative inline-block rounded-full border border-gray-300 bg-white px-4 py-1 text-xs shadow-sm">
+                          {formatDateLabel(dateKey)}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        {messages?.map((message, index, originalMessages) => {
+                          if (!message?.member || !message?.user) return null
+
+                          const prevMessage = originalMessages[index - 1]
+
+                          const diffInMinutes = prevMessage
+                            ? dayjs(new Date(message._creationTime)).diff(
+                                new Date(prevMessage._creationTime),
+                                'minutes',
+                              )
+                            : 6
+
+                          const isCompact =
+                            !!prevMessage &&
+                            prevMessage.user._id === message.user._id &&
+                            diffInMinutes < TIME_THRESHOLD
+                          return (
+                            <Message
+                              key={message?._id}
+                              {...message}
+                              isEditing={editingId === message._id}
+                              onEditingId={setEditingId}
+                              isCompact={isCompact}
+                              hideThreadButton={true}
+                              isAuthor={message.memberId === currentMember?._id}
+                            />
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })}
+              <div
+                ref={(el) => {
+                  if (el) {
+                    const observer = new IntersectionObserver(
+                      ([entry]) => {
+                        if (entry.isIntersecting && canLoadMore) {
+                          loadMore()
+                        }
+                      },
+                      { threshold: 1.0 },
+                    )
+
+                    observer.observe(el)
+
+                    return () => observer.disconnect()
+                  }
+                }}
+                className="h-1"
+              />
+              {isLoadingMore && (
+                <div className="relative my-2 text-center">
+                  <hr className="absolute left-0 right-0 top-1/2 border-t border-gray-300" />
+                  <span className="relative inline-block rounded-full border border-gray-300 bg-white px-4 py-1 text-xs shadow-sm">
+                    <Loader className="size-4 animate-spin" />
+                  </span>
+                </div>
+              )}
               <Message
                 {...message}
                 hideThreadButton

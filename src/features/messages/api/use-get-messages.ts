@@ -14,7 +14,7 @@ interface UseGetMessagesProps {
 export type UseGetMessagesReturnType =
   (typeof api.messages.get._returnType)['page']
 
-export const useGetMessages = ({ ...props }: UseGetMessagesProps) => {
+export const useGetMessages = (props: UseGetMessagesProps) => {
   const { results, status, loadMore, isLoading } = usePaginatedQuery(
     api.messages.get,
     props,
