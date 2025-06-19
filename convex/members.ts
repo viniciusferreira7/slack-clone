@@ -75,3 +75,22 @@ export const currentMember = query({
     return member
   },
 })
+
+export const getById = query({
+  args: {
+    id: v.id('members'),
+    workspaceId: v.id('workspaces'),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      return null
+    }
+    return ctx.db
+      .query('members')
+      .withIndex('by_workspace_id_user_id', (q) =>
+        q.eq('workspaceId', args.workspaceId).eq('userId', userId),
+      )
+      .unique()
+  },
+})
