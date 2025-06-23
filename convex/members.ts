@@ -86,11 +86,38 @@ export const getById = query({
     if (!userId) {
       return null
     }
-    return ctx.db
+
+    const member = await ctx.db
       .query('members')
       .withIndex('by_workspace_id_user_id', (q) =>
         q.eq('workspaceId', args.workspaceId).eq('userId', userId),
       )
       .unique()
+
+    if (!member) {
+      return null
+    }
+
+    const currentMember = await ctx.db
+      .query('members')
+      .withIndex('by_workspace_id_user_id', (q) =>
+        q.eq('workspaceId', args.workspaceId).eq('userId', userId),
+      )
+      .unique()
+
+    if (!currentMember) {
+      return null
+    }
+
+    const user = await getUserById(ctx, userId)
+
+    if (!user) {
+      return null
+    }
+
+    return {
+      ...member,
+      userId,
+    }
   },
 })

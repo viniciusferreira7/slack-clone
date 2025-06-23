@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Loader } from 'lucide-react'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 import { useCreateOrGetConversation } from '@/features/conversations/api/use-create-or-get-conversation'
 
@@ -16,10 +17,17 @@ export function Conversation({ workspaceId, memberId }: ConversationProps) {
   const { data, mutate, isPending } = useCreateOrGetConversation()
 
   useEffect(() => {
-    mutate({
-      workspaceId: workspaceId as Id<'workspaces'>,
-      memberId: memberId as Id<'members'>,
-    })
+    mutate(
+      {
+        workspaceId: workspaceId as Id<'workspaces'>,
+        memberId: memberId as Id<'members'>,
+      },
+      {
+        onError: () => {
+          toast.error('Failed to load conversation')
+        },
+      },
+    )
   }, [workspaceId, memberId, mutate])
 
   if (isPending) {
