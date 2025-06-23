@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 
 import { api } from '../../../../../../convex/_generated/api'
 import type { Doc, Id } from '../../../../../../convex/_generated/dataModel'
+import { Conversation } from './components/conversation'
 
 interface Props {
   params: Promise<{ id: string; memberId: string }>
@@ -41,5 +42,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MemberIdPage(props: Props) {
   const params = await props.params
 
-  return <div>{params.memberId}</div>
+  return <Conversation workspaceId={params.id} memberId={params.memberId} />
 }

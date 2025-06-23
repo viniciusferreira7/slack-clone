@@ -7,7 +7,6 @@ import { api } from '../../../../convex/_generated/api'
 import type { Doc, Id } from '../../../../convex/_generated/dataModel'
 
 interface CreateOrGetConversationRequest {
-  body: string
   workspaceId: Id<'workspaces'>
   memberId: Id<'members'>
 }
