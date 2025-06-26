@@ -12,6 +12,7 @@ import { isYesterday } from '@/utils/date/is-yesterday'
 
 import type { Doc, Id } from '../../../convex/_generated/dataModel'
 import { ChannelHero } from './channel-hero'
+import { ConversationHero } from './conversation-hero'
 import { Message } from './message'
 
 interface MessageListProps {
@@ -28,6 +29,8 @@ interface MessageListProps {
 const TIME_THRESHOLD = 5
 
 export function MessageList({
+  memberName,
+  memberImage,
   channel,
   messages,
   onLoadMore,
@@ -143,6 +146,9 @@ export function MessageList({
         </div>
       )}
       {variant === 'channel' && channel?._id && <ChannelHero {...channel} />}
+      {variant === 'conversation' && memberName && (
+        <ConversationHero name={memberName} image={memberImage} />
+      )}
     </div>
   )
 }

@@ -1,0 +1,25 @@
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+
+type ConversationHeroProps = {
+  name: string
+  image?: string
+}
+
+export function ConversationHero(props: ConversationHeroProps) {
+  const avatarFallback = props.name.charAt(0).toUpperCase()
+
+  return (
+    <div className="mx-5 mb-4 mt-[88px]">
+      <div className="mb-2 flex items-center gap-x-1">
+        <Avatar className="mr-2 size-14">
+          <AvatarImage src={props.image} />
+          <AvatarFallback>{avatarFallback}</AvatarFallback>
+        </Avatar>
+        <p className="text-2xl font-bold">{props.name}</p>
+      </div>
+      <p className="mb-4 font-normal text-slate-800">
+        This conversation is just between you and <strong>{props.name}</strong>
+      </p>
+    </div>
+  )
+}

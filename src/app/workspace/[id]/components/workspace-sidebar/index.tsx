@@ -11,6 +11,7 @@ import {
 import { useCreateChannelModal } from '@/features/channels/store/use-create-channel-modal'
 import { useGetMembers } from '@/features/members/api/use-get-members'
 import { useChannelId } from '@/hooks/use-channel-id'
+import { useMemberId } from '@/hooks/use-member-id'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
 import type { Doc } from '../../../../../../convex/_generated/dataModel'
@@ -32,6 +33,7 @@ export function WorkspaceSidebar({
 }: WorkspaceSidebarProps) {
   const workspaceId = useWorkspaceId()
   const channelId = useChannelId()
+  const memberId = useMemberId()
   const [, setOpen] = useCreateChannelModal()
 
   const { data: members, isLoading: isMembersLoading } = useGetMembers({
@@ -110,6 +112,7 @@ export function WorkspaceSidebar({
                 label={item.user.name}
                 image={item.user.image}
                 workspaceId={workspaceId}
+                variant={memberId === item._id ? 'active' : 'default'}
               />
             )
           })}
