@@ -15,6 +15,8 @@ import { ChannelHero } from './channel-hero'
 import { Message } from './message'
 
 interface MessageListProps {
+  memberName?: string
+  memberImage?: string
   channel?: Doc<'channels'>
   messages: UseGetMessagesReturnType | undefined
   onLoadMore: () => void

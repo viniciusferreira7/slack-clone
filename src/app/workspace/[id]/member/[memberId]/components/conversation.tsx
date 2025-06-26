@@ -4,6 +4,7 @@ import { AlertTriangle, Loader } from 'lucide-react'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 
+import { MessageList } from '@/components/message-list'
 import { useCreateOrGetConversation } from '@/features/conversations/api/use-create-or-get-conversation'
 import { useGetMember } from '@/features/members/api/use-get-member'
 import { useGetMessages } from '@/features/messages/api/use-get-messages'
@@ -93,9 +94,20 @@ export function Conversation(props: ConversationProps) {
           </p>
         </div>
       ) : (
-        <div>Ola</div>
+        <MessageList
+          memberName={member?.user?.name}
+          memberImage={member?.user?.image}
+          messages={messages}
+          onLoadMore={loadMore}
+          canLoadMore={status === 'CanLoadMore'}
+          isLoadingMore={status === 'LoadingMore'}
+          variant="conversation"
+        />
       )}
-      <ChatInput />
+      <ChatInput
+        placeholder={`Message ${member?.user?.name}`}
+        conversationId={data?.conversation._id}
+      />
     </div>
   )
 }
