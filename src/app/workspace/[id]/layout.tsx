@@ -9,6 +9,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
+import { Profile } from '@/features/members/components/profile'
 
 import { api } from '../../../../convex/_generated/api'
 import type { Doc, Id } from '../../../../convex/_generated/dataModel'
@@ -20,6 +21,8 @@ import { WorkspaceSidebar } from './components/workspace-sidebar'
 const CreateChannelModal = dynamic(
   () => import('@/features/channels/components/create-channel-modal'),
 )
+
+// const Profile = dynamic()
 
 interface WorkspaceIdLayoutProps {
   params: Promise<{
@@ -98,6 +101,7 @@ export default async function WorkspaceIdLayout({
               {children}
             </ResizablePanel>
             <Thread />
+            <Profile />
           </ResizablePanelGroup>
         </div>
       </div>

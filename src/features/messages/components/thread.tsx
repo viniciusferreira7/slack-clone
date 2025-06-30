@@ -49,7 +49,7 @@ export function Thread() {
   const [editorKey, setEditorKey] = useState(0)
   const [isPending, setIsPending] = useState(false)
 
-  const { parentMessageId, onClose } = usePanel()
+  const { parentMessageId, onClose, profileMemberId } = usePanel()
 
   const { data: message, isLoading: isMessageLoading } = useGetMessage({
     messageId: parentMessageId as Id<'messages'>,
@@ -87,7 +87,7 @@ export function Thread() {
     isMessagesLoading ||
     status === 'LoadingFirstPage'
 
-  if (!parentMessageId) {
+  if (!parentMessageId && !!profileMemberId) {
     return null
   }
 
@@ -274,6 +274,7 @@ export function Thread() {
                 threadCount={0}
                 threadImage={undefined}
                 threadTimestamp={0}
+                threadName={undefined}
               />
             </div>
             <div className="px-4">

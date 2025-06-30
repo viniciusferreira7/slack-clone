@@ -9,10 +9,15 @@ interface UseGetMemberProps {
 }
 
 export const useGetMember = ({ workspaceId, memberId }: UseGetMemberProps) => {
-  const data = useQuery(api.members.getById, {
-    workspaceId,
-    id: memberId,
-  })
+  const data = useQuery(
+    api.members.getById,
+    memberId
+      ? {
+          workspaceId,
+          id: memberId,
+        }
+      : 'skip',
+  )
   const isLoading = data === undefined
 
   return { data, isLoading }

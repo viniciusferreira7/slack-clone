@@ -34,7 +34,8 @@ type MessageProps = UseGetMessagesReturnType[number] & {
 }
 
 export function Message(props: MessageProps) {
-  const { parentMessageId, onOpenChange, onClose } = usePanel()
+  const { parentMessageId, onOpenChange, onClose, onOpenProfileMember } =
+    usePanel()
 
   const { mutate: updateMessage, isPending: isUpdatingMessage } =
     useUpdateMessage()
@@ -196,7 +197,7 @@ export function Message(props: MessageProps) {
         )}
       >
         <div className="flex items-start gap-2">
-          <button>
+          <button onClick={() => onOpenProfileMember(props.memberId)}>
             <Avatar>
               <AvatarFallback className="rounded-md bg-sky-500 text-white">
                 {avatarFallback}
@@ -217,7 +218,10 @@ export function Message(props: MessageProps) {
           ) : (
             <div className="flex w-full flex-col overflow-hidden">
               <div className="text-sm">
-                <button className="font-bold text-primary">
+                <button
+                  className="font-bold text-primary hover:underline"
+                  onClick={() => onOpenProfileMember(props.memberId)}
+                >
                   {props.user.name}
                 </button>
                 <span>&nbsp;&nbsp;</span>
