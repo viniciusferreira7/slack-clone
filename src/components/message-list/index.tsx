@@ -146,7 +146,7 @@ export function MessageList({
         </div>
       )}
       {variant === 'channel' && channel?._id && <ChannelHero {...channel} />}
-      {variant === 'conversation' && memberName && (
+      {variant === 'conversation' && (
         <ConversationHero name={memberName} image={memberImage} />
       )}
     </div>

@@ -19,6 +19,7 @@ import { Hint } from '../hint'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { MessageToolbar } from './message-toolbar'
 import { Reactions } from './reactions'
+import { ThreadBar } from './thread-bar'
 import { Thumbnail } from './thumbnail'
 
 const Renderer = dynamic(() => import('./renderer'), { ssr: false })
@@ -155,6 +156,13 @@ export function Message(props: MessageProps) {
                   reactions={props.reactions}
                   onReactionChange={handleToggleReaction}
                 />
+                <ThreadBar
+                  count={props.threadCount}
+                  image={props.threadImage}
+                  name={props.threadName}
+                  timestamp={props.threadTimestamp}
+                  onClick={() => onOpenChange(props._id)}
+                />
               </div>
             )}
           </div>
@@ -227,6 +235,13 @@ export function Message(props: MessageProps) {
               <Reactions
                 reactions={props.reactions}
                 onReactionChange={handleToggleReaction}
+              />
+              <ThreadBar
+                count={props.threadCount}
+                image={props.threadImage}
+                name={props.threadName}
+                timestamp={props.threadTimestamp}
+                onClick={() => onOpenChange(props._id)}
               />
             </div>
           )}
