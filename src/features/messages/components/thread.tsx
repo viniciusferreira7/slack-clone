@@ -87,7 +87,7 @@ export function Thread() {
     isMessagesLoading ||
     status === 'LoadingFirstPage'
 
-  if (!parentMessageId && !!profileMemberId) {
+  if (!parentMessageId || !!profileMemberId) {
     return null
   }
 
@@ -288,8 +288,16 @@ export function Thread() {
             </div>
           </div>
         ) : (
-          <div className="grid h-full place-items-center">
-            <Loader className="size-5 animate-spin text-muted-foreground" />
+          <div className="flex h-full flex-col">
+            <div className="flex min-h-[49px] items-center justify-between border-b px-4">
+              <p className="text-lg font-bold">Thread</p>
+              <Button variant="ghost" size="iconSm" onClick={onClose}>
+                <XIcon className="size-5 stroke-[1.5]" />
+              </Button>
+            </div>
+            <div className="flex h-full flex-col items-center justify-center gap-y-2">
+              <Loader className="size-5 animate-spin text-muted-foreground" />
+            </div>
           </div>
         )}
       </ResizablePanel>
