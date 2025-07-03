@@ -121,3 +121,40 @@ export const getById = query({
     }
   },
 })
+
+export const update = mutation({
+  args: {
+    id: v.id('members'),
+    role: v.union(v.literal('admin'), v.literal('member')),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      throw new Error('Unauthorized')
+    }
+
+    const member = await ctx.db.get(args.id)
+
+    if (!member) {
+      throw new Error('Member not found')
+    }
+
+    const currentMember = await ctx.db
+      .query('members')
+      .withIndex('by_workspace_id_user_id', (q) =>
+        q.eq('workspaceId', member.workspaceId).eq('userId', userId),
+      )
+      .first()
+
+    if (!currentMember) {
+      throw new Error('Unauthorized')
+    }
+
+    await ctx.db.patch(args.id, {
+      role: args.role,
+    })
+
+    return { memberId: member._id }
+  },
+})
+
