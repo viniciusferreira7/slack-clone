@@ -13,6 +13,13 @@ import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { Separator } from '@/components/ui/separator'
 import { useConfirm } from '@/hooks/use-confirm'
@@ -86,6 +93,8 @@ export function Profile() {
           toast.success('Member was removed')
 
           onCloseProfileMember()
+
+          onCloseProfileMember()
         },
         onError: () => {
           toast.error('Failed to remove member')
@@ -109,6 +118,8 @@ export function Profile() {
       {
         onSuccess: () => {
           toast.success('Role changed')
+
+          onCloseProfileMember()
         },
         onError: () => {
           toast.error('Failed to change role')
@@ -194,14 +205,32 @@ export function Profile() {
                 {currentMember?.role === 'admin' &&
                 currentMember._id !== member?._id ? (
                   <div className="mt-4 flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      className="w-full capitalize"
-                      onClick={handleUpdate}
-                      disabled={isRemovingMember || isUpdatingMember}
-                    >
-                      {member?.role} <ChevronDownIcon />
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full capitalize"
+                          disabled={isRemovingMember || isUpdatingMember}
+                        >
+                          {member?.role} <ChevronDownIcon />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-full">
+                        <DropdownMenuRadioGroup
+                          value={member?.role}
+                          onValueChange={(role) =>
+                            handleUpdate(role as 'admin' | 'member')
+                          }
+                        >
+                          <DropdownMenuRadioItem value="admin">
+                            Admin
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="member">
+                            Member
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button
                       variant="outline"
                       className="w-full"
