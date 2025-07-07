@@ -1,7 +1,14 @@
 'use client'
 
-import { AlertTriangle, Loader, MailIcon, XIcon } from 'lucide-react'
+import {
+  AlertTriangle,
+  ChevronDownIcon,
+  Loader,
+  MailIcon,
+  XIcon,
+} from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -11,12 +18,24 @@ import { usePanel } from '@/hooks/use-panel'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
 import type { Id } from '../../../../convex/_generated/dataModel'
+import { useCurrentMember } from '../api/use-current-member'
 import { useGetMember } from '../api/use-get-member'
+import { useRemoveMember } from '../api/use-remove-member copy'
+import { useUpdateMember } from '../api/use-update-member'
 
 export function Profile() {
+  const workspaceId = useWorkspaceId()
+
+  const { data: currentMember, isLoading: isLoadingCurrentMember } =
+    useCurrentMember({
+      workspaceId,
+    })
   const { profileMemberId, parentMessageId, onCloseProfileMember } = usePanel()
 
-  const workspaceId = useWorkspaceId()
+  const { mutate: removeMember, isPending: isRemovingMember } =
+    useRemoveMember()
+  const { mutate: updateMember, isPending: isUpdatingMember } =
+    useUpdateMember()
 
   const { data: member, isLoading: isMemberLoading } = useGetMember({
     workspaceId: workspaceId as Id<'workspaces'>,
@@ -27,12 +46,42 @@ export function Profile() {
     return null
   }
 
-  const isLoading = isMemberLoading
+  const isLoading = isMemberLoading || isLoadingCurrentMember
 
   const showPanel = !isLoading && !!profileMemberId && !parentMessageId
 
   const avatarFallback = member?.user?.name?.charAt(0).toUpperCase()
 
+  function handleRemove() {
+    if (!member?._id) return
+
+    removeMember(
+      {
+        id: member?._id,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Member was removed')
+        },
+      },
+    )
+  }
+
+  function handleUpdate() {
+    if (!member?._id) return
+
+    updateMember(
+      {
+        id: member?._id,
+        role: 'member',
+      },
+      {
+        onSuccess: () => {
+          toast.success('Member was updated')
+        },
+      },
+    )
+  }
   return (
     <>
       <ResizableHandle withHandle />
@@ -76,7 +125,39 @@ export function Profile() {
               </Avatar>
             </div>
             <div className="flex flex-col p-4">
-              <p className="text-xl font-bold">{member?.user?.name}</p>
+              <div className="flex flex-col p-4">
+                <p className="text-xl font-bold">{member?.user?.name}</p>
+                {currentMember?.role === 'admin' &&
+                currentMember._id !== member?._id ? (
+                  <div className="mt-4 flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full capitalize"
+                      onClick={handleUpdate}
+                      disabled={isRemovingMember || isUpdatingMember}
+                    >
+                      {member?.role} <ChevronDownIcon />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleRemove}
+                      disabled={isRemovingMember || isUpdatingMember}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ) : (
+                  currentMember?._id === member?._id &&
+                  currentMember?.role !== 'admin' && (
+                    <div className="mt-4">
+                      <Button variant="outline" className="w-full">
+                        Leave
+                      </Button>
+                    </div>
+                  )
+                )}
+              </div>
               <Separator />
               <div className="flex flex-col p-4">
                 <p className="mb-4 text-sm font-bold">Contact information</p>
