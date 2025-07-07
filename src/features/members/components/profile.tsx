@@ -8,6 +8,7 @@ import {
   XIcon,
 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -25,6 +26,7 @@ import { useRemoveMember } from '../api/use-remove-member copy'
 import { useUpdateMember } from '../api/use-update-member'
 
 export function Profile() {
+  const router = useRouter()
   const workspaceId = useWorkspaceId()
 
   const [RemoveDialog, confirmRemove] = useConfirm({
@@ -131,6 +133,8 @@ export function Profile() {
           toast.success('You left the workspace')
 
           onCloseProfileMember()
+
+          router.replace('/')
         },
         onError: () => {
           toast.error('Failed to leave the workspace')
