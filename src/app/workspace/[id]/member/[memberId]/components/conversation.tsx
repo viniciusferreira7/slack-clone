@@ -8,6 +8,7 @@ import { MessageList } from '@/components/message-list'
 import { useCreateOrGetConversation } from '@/features/conversations/api/use-create-or-get-conversation'
 import { useGetMember } from '@/features/members/api/use-get-member'
 import { useGetMessages } from '@/features/messages/api/use-get-messages'
+import { usePanel } from '@/hooks/use-panel'
 
 import type { Id } from '../../../../../../../convex/_generated/dataModel'
 import { ChatInput } from './chat-input'
@@ -21,6 +22,8 @@ interface ConversationProps {
 export function Conversation(props: ConversationProps) {
   const workspaceId = props.workspaceId as Id<'workspaces'>
   const memberId = props.memberId as Id<'members'>
+
+  const { onOpenProfileMember } = usePanel()
 
   const { data: member, isLoading: isMemberLoading } = useGetMember({
     workspaceId,
@@ -84,7 +87,7 @@ export function Conversation(props: ConversationProps) {
       <Header
         memberName={member?.user?.name}
         memberImage={member?.user?.image}
-        onClick={() => {}}
+        onClick={() => onOpenProfileMember(member._id)}
       />
       {!messages.length ? (
         <div className="flex h-full flex-col items-center justify-center gap-y-2">
