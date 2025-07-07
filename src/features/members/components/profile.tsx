@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { Separator } from '@/components/ui/separator'
+import { useConfirm } from '@/hooks/use-confirm'
 import { usePanel } from '@/hooks/use-panel'
 import { useWorkspaceId } from '@/hooks/use-workspace-id'
 
@@ -25,6 +26,21 @@ import { useUpdateMember } from '../api/use-update-member'
 
 export function Profile() {
   const workspaceId = useWorkspaceId()
+
+  const [RemoveDialog, confirmRemove] = useConfirm({
+    title: 'Remove member',
+    message: 'Are you sure you want to remove this member ?',
+  })
+
+  const [UpdateDialog, confirmUpdate] = useConfirm({
+    title: 'Change role',
+    message: 'Are you sure you want to change this member´s role ?',
+  })
+
+  const [LeaveDialog, confirmLeave] = useConfirm({
+    title: 'Leave workspace',
+    message: 'Are you sure you want to leave this workspace ?',
+  })
 
   const { data: currentMember, isLoading: isLoadingCurrentMember } =
     useCurrentMember({
@@ -52,8 +68,12 @@ export function Profile() {
 
   const avatarFallback = member?.user?.name?.charAt(0).toUpperCase()
 
-  function handleRemove() {
+  async function handleRemove() {
     if (!member?._id) return
+
+    const ok = await confirmRemove()
+
+    if (!ok) return
 
     removeMember(
       {
@@ -62,28 +82,68 @@ export function Profile() {
       {
         onSuccess: () => {
           toast.success('Member was removed')
+
+          onCloseProfileMember()
+        },
+        onError: () => {
+          toast.error('Failed to remove member')
         },
       },
     )
   }
 
-  function handleUpdate() {
+  async function handleUpdate(role: 'admin' | 'member') {
     if (!member?._id) return
+
+    const ok = await confirmUpdate()
+
+    if (!ok) return
 
     updateMember(
       {
         id: member?._id,
-        role: 'member',
+        role,
       },
       {
         onSuccess: () => {
-          toast.success('Member was updated')
+          toast.success('Role changed')
+        },
+        onError: () => {
+          toast.error('Failed to change role')
         },
       },
     )
   }
+
+  async function handleLeft() {
+    if (!member?._id) return
+
+    const ok = await confirmLeave()
+
+    if (!ok) return
+
+    removeMember(
+      {
+        id: member?._id,
+      },
+      {
+        onSuccess: () => {
+          toast.success('You left the workspace')
+
+          onCloseProfileMember()
+        },
+        onError: () => {
+          toast.error('Failed to leave the workspace')
+        },
+      },
+    )
+  }
+
   return (
     <>
+      <UpdateDialog />
+      <RemoveDialog />
+      <LeaveDialog />
       <ResizableHandle withHandle />
       <ResizablePanel minSize={20} defaultSize={20}>
         {!member && !isLoading && (
@@ -151,7 +211,11 @@ export function Profile() {
                   currentMember?._id === member?._id &&
                   currentMember?.role !== 'admin' && (
                     <div className="mt-4">
-                      <Button variant="outline" className="w-full">
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={handleLeft}
+                      >
                         Leave
                       </Button>
                     </div>
