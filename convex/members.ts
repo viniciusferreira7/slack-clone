@@ -215,17 +215,11 @@ export const remove = mutation({
         .collect(),
     ])
 
-    for (const message of messages) {
-      await ctx.db.delete(message._id)
-    }
-
-    for (const reaction of reactions) {
-      await ctx.db.delete(reaction._id)
-    }
-
-    for (const conversation of conversations) {
-      await ctx.db.delete(conversation._id)
-    }
+    await Promise.all([
+      messages.map((message) => ctx.db.delete(message._id)),
+      reactions.map((reaction) => ctx.db.delete(reaction._id)),
+      conversations.map((conversation) => ctx.db.delete(conversation._id)),
+    ])
 
     await ctx.db.delete(args.id)
 
