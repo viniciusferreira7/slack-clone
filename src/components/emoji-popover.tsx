@@ -1,7 +1,6 @@
 'use client'
 
-import emojiData from '@emoji-mart/data'
-import EmojiPicker from '@emoji-mart/react'
+import EmojiPicker, { type EmojiClickData } from 'emoji-picker-react'
 import { type ReactNode, useState } from 'react'
 
 import {
@@ -20,8 +19,7 @@ import {
 interface EmojiPopoverProps {
   children: ReactNode
   hint?: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onEmojiSelect: (emoji: any) => void
+  onEmojiSelect: (emoji: string) => void
 }
 
 export function EmojiPopover({
@@ -32,10 +30,8 @@ export function EmojiPopover({
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [tooltipOpen, setTooltipOpen] = useState(false)
 
-  // FIXME: The lib @emoji/mart doesn't provide the type of emoji
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function handleSelectEmoji(emoji: any) {
-    onEmojiSelect(emoji)
+  function handleSelectEmoji(value: EmojiClickData) {
+    onEmojiSelect(value?.emoji)
     setPopoverOpen(false)
 
     setTimeout(() => {
@@ -59,11 +55,7 @@ export function EmojiPopover({
           </TooltipContent>
         </Tooltip>
         <PopoverContent className="w-full border-none p-0 shadow-none">
-          <EmojiPicker
-            data={emojiData}
-            onEmojiSelect={handleSelectEmoji}
-            theme="light"
-          />
+          <EmojiPicker onEmojiClick={handleSelectEmoji} />
         </PopoverContent>
       </Popover>
     </TooltipProvider>

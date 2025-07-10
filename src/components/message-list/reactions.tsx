@@ -60,10 +60,7 @@ export function Reactions({ reactions, onReactionChange }: ReactionsProps) {
           </Hint>
         )
       })}
-      <EmojiPopover
-        hint="Add reaction"
-        onEmojiSelect={(emoji) => onReactionChange(emoji.native)}
-      >
+      <EmojiPopover hint="Add reaction" onEmojiSelect={onReactionChange}>
         <button className="flex h-7 items-center rounded-full border border-transparent bg-slate-200/70 px-3 text-slate-800 hover:border-slate-500">
           <SmilePlus className="size-4" />
         </button>

@@ -26,10 +26,7 @@ export function MessageToolbar({
   return (
     <div className="absolute right-5 top-0">
       <div className="rounded-md border border-white opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-        <EmojiPopover
-          hint="Add reaction"
-          onEmojiSelect={(emoji) => onReaction(emoji.native)}
-        >
+        <EmojiPopover hint="Add reaction" onEmojiSelect={onReaction}>
           <Button variant="ghost" size="iconSm" disabled={isPending}>
             <Smile className="size-4" />
           </Button>

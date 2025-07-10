@@ -154,13 +154,11 @@ export default function Editor({
     }
   }
 
-  // FIXME: The lib @emoji/mart doesn't provide the type of emoji
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function handleSelectEmoji(emoji: any) {
+  function handleSelectEmoji(emoji: string) {
     const quill = quillRef.current
 
     if (quill) {
-      quill.insertText(quill.getSelection()?.index || 0, emoji?.native)
+      quill.insertText(quill.getSelection()?.index || 0, emoji)
     }
   }
 
